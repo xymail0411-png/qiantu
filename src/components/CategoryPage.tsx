@@ -4,7 +4,7 @@ import type { Category } from '../data/categories'
 import { motion } from 'framer-motion'
 
 function CategoryButton({ cat, index }: { cat: Category; index: number }) {
-  const { openAmountInput, closeCategoryPage } = useAppStore()
+  const { openAmountInput } = useAppStore()
 
   const handleClick = () => {
     openAmountInput(cat)

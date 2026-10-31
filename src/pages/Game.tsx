@@ -105,16 +105,69 @@ export default function GamePage() {
 
   const canOpenBox = (todayExpense || 0) > 0 && !todayBox
 
+  const getAdjustedProbabilities = (expense: number) => {
+    // Base probabilities
+    let commonProb = 0.6
+    let rareProb = 0.3
+    let legendaryProb = 0.1
+
+    // Spending restraint bonus: less spending = better odds
+    if (expense < 30) {
+      // Very frugal: big bonus
+      commonProb = 0.4
+      rareProb = 0.35
+      legendaryProb = 0.25
+    } else if (expense < 80) {
+      // Moderate: slight bonus
+      commonProb = 0.5
+      rareProb = 0.32
+      legendaryProb = 0.18
+    } else if (expense < 150) {
+      // Normal: base rates
+      commonProb = 0.6
+      rareProb = 0.3
+      legendaryProb = 0.1
+    } else if (expense < 300) {
+      // High spending: slight penalty
+      commonProb = 0.7
+      rareProb = 0.25
+      legendaryProb = 0.05
+    } else {
+      // Very high spending: big penalty
+      commonProb = 0.8
+      rareProb = 0.18
+      legendaryProb = 0.02
+    }
+
+    return { commonProb, rareProb, legendaryProb }
+  }
+
   const handleOpen = async () => {
     if (!canOpenBox || !prizes || opening) return
 
     setOpening(true)
     await new Promise((r) => setTimeout(r, 800))
 
+    const expense = todayExpense || 0
+    const { commonProb, rareProb, legendaryProb } = getAdjustedProbabilities(expense)
+
+    // Adjust each prize's probability based on rarity
+    const adjustedPrizes = prizes.map((p) => {
+      let adjustedProb = p.probability
+      if (p.rarity === 'common') {
+        adjustedProb = commonProb / prizes.filter((x) => x.rarity === 'common').length
+      } else if (p.rarity === 'rare') {
+        adjustedProb = rareProb / prizes.filter((x) => x.rarity === 'rare').length
+      } else if (p.rarity === 'legendary') {
+        adjustedProb = legendaryProb / prizes.filter((x) => x.rarity === 'legendary').length
+      }
+      return { ...p, probability: adjustedProb }
+    })
+
     const rand = Math.random()
     let cumulative = 0
-    let selected = prizes[0]
-    for (const p of prizes) {
+    let selected = adjustedPrizes[0]
+    for (const p of adjustedPrizes) {
       cumulative += p.probability
       if (rand <= cumulative) {
         selected = p
@@ -214,6 +267,18 @@ export default function GamePage() {
         <p className="text-xs text-sub mt-4">
           {todayExpense ? `今日消费 ¥${(todayExpense || 0).toFixed(2)}` : '记一笔支出即可开启盲盒'}
         </p>
+
+        {todayExpense && todayExpense > 0 && (
+          <p className="text-[10px] text-sub/60 mt-1">
+            {(() => {
+              if (todayExpense < 30) return '🌟 消费克制中，传说概率 +15%'
+              if (todayExpense < 80) return '✨ 适度消费，传说概率 +8%'
+              if (todayExpense < 150) return '📊 正常概率'
+              if (todayExpense < 300) return '⚠️ 消费偏高，传说概率 -5%'
+              return '🚨 消费过高，传说概率 -8%'
+            })()}
+          </p>
+        )}
 
         {result && (
           <motion.button

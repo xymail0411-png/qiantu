@@ -2,14 +2,32 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { db } from '../db'
 import { useAppStore } from '../store'
-import type { Category } from '../data/categories'
+import { defaultEquivalents } from '../data/equivalents'
 
 export default function AmountInput() {
   const { showAmountInput, selectedCategory, closeAmountInput, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
+  const [showHint, setShowHint] = useState(false)
+  const [hintText, setHintText] = useState('')
 
   if (!selectedCategory) return null
+
+  const getEquivalentHint = (num: number): string => {
+    const hints: string[] = []
+    for (const eq of defaultEquivalents) {
+      const count = num / eq.price
+      if (count >= 0.5 && count <= 100) {
+        if (count >= 1) {
+          hints.push(`${Math.floor(count)}${eq.name}`)
+        } else {
+          hints.push(`${count.toFixed(1)}${eq.name}`)
+        }
+      }
+    }
+    if (hints.length === 0) return ''
+    return `≈ ${hints.slice(0, 2).join(' 或 ')}`
+  }
 
   const handleConfirm = async () => {
     const num = parseFloat(amount)
@@ -24,10 +42,23 @@ export default function AmountInput() {
       createdAt: Date.now(),
     })
 
-    setAmount('')
-    setNote('')
-    closeAmountInput()
-    triggerRefresh()
+    const hint = getEquivalentHint(num)
+    if (hint) {
+      setHintText(hint)
+      setShowHint(true)
+      setTimeout(() => {
+        setShowHint(false)
+        setAmount('')
+        setNote('')
+        closeAmountInput()
+        triggerRefresh()
+      }, 1500)
+    } else {
+      setAmount('')
+      setNote('')
+      closeAmountInput()
+      triggerRefresh()
+    }
   }
 
   const handleKeyPress = (key: string) => {
@@ -124,6 +155,19 @@ export default function AmountInput() {
             >
               确认记账
             </motion.button>
+
+            <AnimatePresence>
+              {showHint && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-3 text-center text-xs text-sub"
+                >
+                  {hintText}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}

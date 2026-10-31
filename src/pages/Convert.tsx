@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
-import { defaultEquivalents } from '../data/equivalents'
+import { defaultEquivalents, experienceEquivalents } from '../data/equivalents'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
@@ -24,6 +24,12 @@ export default function ConvertPage() {
   const [wishName, setWishName] = useState('')
   const [wishPrice, setWishPrice] = useState('')
   const [wishIcon, setWishIcon] = useState('🎁')
+
+  // Three modules toggle state
+  const [showPhysical, setShowPhysical] = useState(true)
+  const [showExperience, setShowExperience] = useState(false)
+  const [showLabor, setShowLabor] = useState(false)
+  const [hourlyWage, setHourlyWage] = useState('')
 
   useEffect(() => {
     if (equivalents && equivalents.length === 0) {
@@ -51,24 +57,66 @@ export default function ConvertPage() {
 
   const amount = todayExpense || 0
 
+  const physicalItems = equivalents?.filter((e) => !e.isCustom) || []
+  const experienceItems = experienceEquivalents
+
+  const laborHours = hourlyWage && parseFloat(hourlyWage) > 0
+    ? amount / parseFloat(hourlyWage)
+    : 0
+
   return (
-    <div className="pb-4 space-y-6">
+    <div className="pb-4 space-y-4">
+      {/* Today's expense summary */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
         <h2 className="text-sm font-medium text-sub mb-1">💡 今天花了</h2>
         <p className="text-3xl font-light text-text mb-4">
           ¥ <span className="font-medium">{amount.toFixed(2)}</span>
         </p>
+      </div>
 
-        {amount > 0 && equivalents && (
+      {/* Module toggles */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <button
+          onClick={() => setShowPhysical(!showPhysical)}
+          className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+            showPhysical ? 'bg-primary text-white' : 'bg-white text-sub border border-border'
+          }`}
+        >
+          🍚 实物参照
+        </button>
+        <button
+          onClick={() => setShowExperience(!showExperience)}
+          className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+            showExperience ? 'bg-primary text-white' : 'bg-white text-sub border border-border'
+          }`}
+        >
+          🎬 体验参照
+        </button>
+        <button
+          onClick={() => setShowLabor(!showLabor)}
+          className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+            showLabor ? 'bg-primary text-white' : 'bg-white text-sub border border-border'
+          }`}
+        >
+          ⏱️ 劳动工时
+        </button>
+      </div>
+
+      {/* Physical equivalents */}
+      {showPhysical && amount > 0 && physicalItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="bg-white rounded-2xl p-5 shadow-sm border border-border"
+        >
+          <h3 className="text-sm font-medium text-text mb-3">🍚 实物参照</h3>
           <div className="space-y-2">
-            <p className="text-xs text-sub">相当于</p>
-            {equivalents.map((eq) => {
+            {physicalItems.map((eq) => {
               const count = amount / eq.price
               return (
-                <motion.div
+                <div
                   key={eq.id}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
                   className="flex items-center justify-between py-2 px-3 bg-bg rounded-xl"
                 >
                   <div className="flex items-center gap-2">
@@ -77,15 +125,80 @@ export default function ConvertPage() {
                     <span className="text-xs text-sub">¥{eq.price}/个</span>
                   </div>
                   <span className="text-sm font-medium text-primary">
-                    × {count.toFixed(1)}
+                    × {count >= 1 ? Math.floor(count) : count.toFixed(1)}
                   </span>
-                </motion.div>
+                </div>
               )
             })}
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
 
+      {/* Experience equivalents */}
+      {showExperience && amount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="bg-white rounded-2xl p-5 shadow-sm border border-border"
+        >
+          <h3 className="text-sm font-medium text-text mb-3">🎬 体验参照</h3>
+          <div className="space-y-2">
+            {experienceItems.map((eq) => {
+              const count = amount / eq.price
+              return (
+                <div
+                  key={eq.name}
+                  className="flex items-center justify-between py-2 px-3 bg-bg rounded-xl"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{eq.icon}</span>
+                    <span className="text-sm text-text">{eq.name}</span>
+                    <span className="text-xs text-sub">¥{eq.price}/次</span>
+                  </div>
+                  <span className="text-sm font-medium text-primary">
+                    × {count.toFixed(1)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Labor hours */}
+      {showLabor && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="bg-white rounded-2xl p-5 shadow-sm border border-border"
+        >
+          <h3 className="text-sm font-medium text-text mb-3">⏱️ 劳动工时</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs text-sub">我的时薪：</span>
+            <input
+              type="number"
+              placeholder="填写时薪"
+              value={hourlyWage}
+              onChange={(e) => setHourlyWage(e.target.value)}
+              className="flex-1 px-3 py-2 bg-bg rounded-lg border border-border text-sm outline-none focus:border-primary"
+            />
+            <span className="text-xs text-sub">元/小时</span>
+          </div>
+          {laborHours > 0 && (
+            <div className="p-4 bg-primary/5 rounded-xl text-center">
+              <p className="text-xs text-sub mb-1">今天的消费相当于</p>
+              <p className="text-2xl font-medium text-primary">
+                {laborHours >= 1 ? laborHours.toFixed(1) : (laborHours * 60).toFixed(0) + ' 分钟'}
+              </p>
+              <p className="text-xs text-sub mt-1">
+                {laborHours >= 1 ? '小时的工作收入' : '的劳动时间'}
+              </p>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Wishlist */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-medium text-text">🛍️ 愿望清单</h2>

@@ -1,22 +1,9 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
-import { allCategories } from '../data/categories'
+import { defaultEquivalents } from '../data/equivalents'
 
 export default function GoalBar() {
   const goal = useLiveQuery(() => db.goals.orderBy('createdAt').last())
-
-  const today = new Date().toISOString().slice(0, 10)
-  const monthStart = today.slice(0, 7) + '-01'
-
-  const monthExpense = useLiveQuery(
-    () => db.transactions
-      .where('date')
-      .between(monthStart, today + '~')
-      .filter((t) => t.type === 'expense')
-      .toArray()
-      .then((txs) => txs.reduce((sum, t) => sum + t.amount, 0)),
-    [today]
-  )
 
   if (!goal) {
     return (
@@ -70,6 +57,21 @@ export default function GoalBar() {
             ? `还差 ¥${remaining.toFixed(0)}`
             : '🎉 已达成！'}
         </span>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-border/50">
+        <p className="text-[10px] text-sub/60 mb-1.5">目标金额相当于</p>
+        <div className="flex flex-wrap gap-2">
+          {defaultEquivalents.slice(0, 4).map((eq) => {
+            const count = Math.floor(goal.targetAmount / eq.price)
+            if (count < 1) return null
+            return (
+              <span key={eq.name} className="text-[10px] text-sub bg-bg px-2 py-1 rounded-full">
+                {eq.icon} {count}{eq.name}
+              </span>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

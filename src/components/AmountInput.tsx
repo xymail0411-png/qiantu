@@ -14,19 +14,28 @@ export default function AmountInput() {
   if (!selectedCategory) return null
 
   const getEquivalentHint = (num: number): { icon: string; text: string } | null => {
-    // Find the most iconic equivalent (count closest to whole number, between 1-50)
     let bestMatch: { icon: string; text: string; score: number } | null = null
 
     for (const eq of defaultEquivalents) {
       const count = num / eq.price
-      if (count >= 1 && count <= 50) {
-        // Score: prefer whole numbers, prefer counts between 2-20
+      if (count >= 1) {
+        // For large amounts, use higher-priced items; for small amounts, use lower-priced
         const wholeNumberScore = 1 - Math.abs(count - Math.round(count))
-        const rangeScore = count >= 2 && count <= 20 ? 1 : 0.5
+        // Prefer counts that are readable: 1-1000 range
+        const rangeScore = count <= 1000 ? 1 : 0.3
         const score = wholeNumberScore * rangeScore
 
         if (!bestMatch || score > bestMatch.score) {
-          const displayCount = count >= 10 ? Math.floor(count) : count.toFixed(1)
+          let displayCount: string
+          if (count >= 1000) {
+            displayCount = (count / 1000).toFixed(1) + 'k'
+          } else if (count >= 100) {
+            displayCount = Math.floor(count).toString()
+          } else if (count >= 10) {
+            displayCount = Math.floor(count).toString()
+          } else {
+            displayCount = count.toFixed(1)
+          }
           bestMatch = {
             icon: eq.icon,
             text: `${displayCount}${eq.name}`,

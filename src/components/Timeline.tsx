@@ -1,4 +1,3 @@
-import { liveQuery } from 'dexie'
 import { db } from '../db'
 import { allCategories } from '../data/categories'
 import { useAppStore } from '../store'
@@ -155,22 +154,17 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
 }
 
 export default function Timeline() {
-  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage } = useAppStore()
+  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage, refreshKey } = useAppStore()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [transactions, setTransactions] = useState<any[]>([])
 
   useEffect(() => {
-    const subscription = liveQuery(() =>
-      db.transactions
-        .where('date')
-        .equals(currentDate)
-        .sortBy('createdAt')
-    ).subscribe({
-      next: (result) => setTransactions(result),
-      error: (err) => console.error('Timeline query error:', err),
-    })
-    return () => subscription.unsubscribe()
-  }, [currentDate])
+    db.transactions
+      .where('date')
+      .equals(currentDate)
+      .sortBy('createdAt')
+      .then(setTransactions)
+  }, [currentDate, refreshKey])
 
   const today = new Date().toISOString().slice(0, 10)
   const isToday = currentDate === today
@@ -186,6 +180,8 @@ export default function Timeline() {
 
   const handleDeleteRecord = async (id: number) => {
     await db.transactions.delete(id)
+    const { triggerRefresh } = useAppStore.getState()
+    triggerRefresh()
   }
 
   const handleResetToday = async () => {

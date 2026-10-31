@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { db } from '../db'
 import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
@@ -10,6 +10,15 @@ export default function AmountInput() {
   const [note, setNote] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [hintText, setHintText] = useState('')
+  const hintTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current) {
+        clearTimeout(hintTimeoutRef.current)
+      }
+    }
+  }, [])
 
   if (!selectedCategory) return null
 
@@ -61,16 +70,21 @@ export default function AmountInput() {
       createdAt: Date.now(),
     })
 
+    if (hintTimeoutRef.current) {
+      clearTimeout(hintTimeoutRef.current)
+    }
+
     const hint = getEquivalentHint(num)
     if (hint) {
       setHintText(`≈ ${hint.icon} ${hint.text}`)
       setShowHint(true)
-      setTimeout(() => {
+      hintTimeoutRef.current = setTimeout(() => {
         setShowHint(false)
         setAmount('')
         setNote('')
         closeAmountInput()
         triggerRefresh()
+        hintTimeoutRef.current = null
       }, 1500)
     } else {
       setAmount('')

@@ -311,7 +311,7 @@ export default function Timeline() {
       </AnimatePresence>
 
       {/* Timeline records */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {filteredTransactions.length > 0 ? (
           <div>
             {filteredTransactions.map((t, i) => (

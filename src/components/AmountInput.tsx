@@ -5,7 +5,7 @@ import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
 
 export default function AmountInput() {
-  const { showAmountInput, selectedCategory, closeAmountInput, triggerRefresh } = useAppStore()
+  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [showHint, setShowHint] = useState(false)
@@ -53,7 +53,7 @@ export default function AmountInput() {
     if (!num || num <= 0) return
 
     await db.transactions.add({
-      date: new Date().toISOString().slice(0, 10),
+      date: currentDate,
       category: selectedCategory.label,
       amount: num,
       type: selectedCategory.type,

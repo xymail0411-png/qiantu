@@ -2,7 +2,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { allCategories } from '../data/categories'
 import { useAppStore } from '../store'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef, useEffect } from 'react'
 
 function getCategoryIcon(label: string): string {
   return allCategories.find((c) => c.label === label)?.icon || '📝'
@@ -33,8 +34,131 @@ function formatShortDate(dateStr: string): string {
   return `${month}/${day}`
 }
 
+function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id: number) => void }) {
+  const [offset, setOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const startX = useRef(0)
+  const currentX = useRef(0)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX
+    setIsDragging(true)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return
+    currentX.current = e.touches[0].clientX
+    const diff = currentX.current - startX.current
+    if (diff < 0) {
+      setOffset(Math.max(diff, -80))
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+    if (offset < -40) {
+      setOffset(-80)
+    } else {
+      setOffset(0)
+    }
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    startX.current = e.clientX
+    setIsDragging(true)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return
+    currentX.current = e.clientX
+    const diff = currentX.current - startX.current
+    if (diff < 0) {
+      setOffset(Math.max(diff, -80))
+    }
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+    if (offset < -40) {
+      setOffset(-80)
+    } else {
+      setOffset(0)
+    }
+  }
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        setIsDragging(false)
+        if (offset < -40) {
+          setOffset(-80)
+        } else {
+          setOffset(0)
+        }
+      }
+    }
+    window.addEventListener('mouseup', handleGlobalMouseUp)
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp)
+  }, [isDragging, offset])
+
+  const time = new Date(t.createdAt).toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return (
+    <div className="relative overflow-hidden rounded-lg mb-1">
+      {/* Delete button background */}
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-expense flex items-center justify-center">
+        <button
+          onClick={() => onDelete(t.id!)}
+          className="text-white text-sm font-medium px-4 py-2"
+        >
+          删除
+        </button>
+      </div>
+
+      {/* Record content */}
+      <motion.div
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: offset }}
+        transition={{ delay: i * 0.04, type: 'spring', stiffness: 300, damping: 30 }}
+        className="relative flex items-center justify-between py-3.5 px-4 bg-white border-b border-border/50 last:border-0 touch-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      >
+        <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full bg-white border-2 border-border flex items-center justify-center text-[10px]">
+          {getCategoryIcon(t.category)}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-text">{t.category}</span>
+            <span className="text-xs text-sub">{time}</span>
+          </div>
+          {t.note && (
+            <p className="text-xs text-sub mt-0.5 truncate">{t.note}</p>
+          )}
+        </div>
+
+        <span className={`text-sm font-medium ${
+          t.type === 'expense' ? 'text-expense' : 'text-income'
+        }`}>
+          {t.type === 'expense' ? '-' : '+'}¥{t.amount.toFixed(2)}
+        </span>
+      </motion.div>
+    </div>
+  )
+}
+
 export default function Timeline() {
   const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage } = useAppStore()
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   const transactions = useLiveQuery(
     () => db.transactions
@@ -55,6 +179,15 @@ export default function Timeline() {
     if (recordFilter === 'all') return true
     return t.type === recordFilter
   }) || []
+
+  const handleDeleteRecord = async (id: number) => {
+    await db.transactions.delete(id)
+  }
+
+  const handleResetToday = async () => {
+    await db.transactions.where('date').equals(today).delete()
+    setShowResetConfirm(false)
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -122,7 +255,55 @@ export default function Timeline() {
         >
           +
         </button>
+
+        {isToday && filteredTransactions.length > 0 && (
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-sub hover:text-expense transition-colors"
+            title="重置今日记录"
+          >
+            ↺
+          </button>
+        )}
       </div>
+
+      {/* Reset confirmation */}
+      <AnimatePresence>
+        {showResetConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            onClick={() => setShowResetConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-base font-medium text-text mb-2">重置今日记录？</h3>
+              <p className="text-sm text-sub mb-4">将删除今天的所有记账记录，此操作不可恢复。</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowResetConfirm(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-bg text-text text-sm font-medium"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleResetToday}
+                  className="flex-1 py-2.5 rounded-xl bg-expense text-white text-sm font-medium"
+                >
+                  确认重置
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Timeline records */}
       <div className="flex-1">
@@ -130,42 +311,14 @@ export default function Timeline() {
           <div className="relative pl-6">
             <div className="absolute left-[9px] top-2 bottom-2 w-px bg-border" />
 
-            {filteredTransactions.map((t, i) => {
-              const time = new Date(t.createdAt).toLocaleTimeString('zh-CN', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })
-
-              return (
-                <motion.div
-                  key={t.id}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  className="relative flex items-center justify-between py-3.5 border-b border-border/50 last:border-0"
-                >
-                  <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full bg-white border-2 border-border flex items-center justify-center text-[10px]">
-                    {getCategoryIcon(t.category)}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-text">{t.category}</span>
-                      <span className="text-xs text-sub">{time}</span>
-                    </div>
-                    {t.note && (
-                      <p className="text-xs text-sub mt-0.5 truncate">{t.note}</p>
-                    )}
-                  </div>
-
-                  <span className={`text-sm font-medium ${
-                    t.type === 'expense' ? 'text-expense' : 'text-income'
-                  }`}>
-                    {t.type === 'expense' ? '-' : '+'}¥{t.amount.toFixed(2)}
-                  </span>
-                </motion.div>
-              )
-            })}
+            {filteredTransactions.map((t, i) => (
+              <SwipeableRecord
+                key={t.id}
+                t={t}
+                i={i}
+                onDelete={handleDeleteRecord}
+              />
+            ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">

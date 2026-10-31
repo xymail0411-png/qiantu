@@ -57,6 +57,7 @@ export interface Badge {
   id?: number
   name: string
   icon: string
+  description: string
   requiredCount: number
   currentCount: number
   unlockedAt?: number

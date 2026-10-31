@@ -1,7 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { defaultPrizes } from '../data/prizes'
-import { useState, useEffect } from 'react'
+import { defaultBadges } from '../data/badges'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GamePage() {
@@ -17,6 +18,80 @@ export default function GamePage() {
     () => db.boxHistory.where('date').equals(today).first(),
     [today]
   )
+  const allBoxHistory = useLiveQuery(() => db.boxHistory.toArray())
+  const allTransactions = useLiveQuery(() => db.transactions.toArray())
+
+  const [opening, setOpening] = useState(false)
+  const [result, setResult] = useState<typeof defaultPrizes[0] | null>(null)
+  const [newBadge, setNewBadge] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (prizes && prizes.length === 0) {
+      db.prizes.bulkAdd(defaultPrizes as any)
+    }
+  }, [prizes])
+
+  useEffect(() => {
+    if (badges && badges.length === 0) {
+      db.badges.bulkAdd(
+        defaultBadges.map((b) => ({ ...b, currentCount: 0 })) as any
+      )
+    }
+  }, [badges])
+
+  const updateBadges = useCallback(async () => {
+    if (!badges || !achievements || !allBoxHistory || !allTransactions) return
+
+    const totalTransactions = allTransactions.length
+    const totalBoxOpenings = allBoxHistory.length
+    const uniquePrizes = new Set(achievements.map((a) => a.prizeName)).size
+    const legendaryCount = achievements.filter((a) => a.rarity === 'legendary').length
+
+    for (const badge of badges) {
+      let currentCount = 0
+      let shouldUnlock = false
+
+      if (badge.name === '初出茅庐') {
+        currentCount = Math.min(totalTransactions, badge.requiredCount)
+        shouldUnlock = totalTransactions >= badge.requiredCount
+      } else if (badge.name === '小有积蓄') {
+        currentCount = Math.min(totalTransactions, badge.requiredCount)
+        shouldUnlock = totalTransactions >= badge.requiredCount
+      } else if (badge.name === '记账达人') {
+        currentCount = Math.min(totalTransactions, badge.requiredCount)
+        shouldUnlock = totalTransactions >= badge.requiredCount
+      } else if (badge.name === '盲盒新手') {
+        currentCount = Math.min(totalBoxOpenings, badge.requiredCount)
+        shouldUnlock = totalBoxOpenings >= badge.requiredCount
+      } else if (badge.name === '盲盒爱好者') {
+        currentCount = Math.min(totalBoxOpenings, badge.requiredCount)
+        shouldUnlock = totalBoxOpenings >= badge.requiredCount
+      } else if (badge.name === '盲盒大师') {
+        currentCount = Math.min(totalBoxOpenings, badge.requiredCount)
+        shouldUnlock = totalBoxOpenings >= badge.requiredCount
+      } else if (badge.name === '收藏家') {
+        currentCount = Math.min(uniquePrizes, badge.requiredCount)
+        shouldUnlock = uniquePrizes >= badge.requiredCount
+      } else if (badge.name === '传说猎人') {
+        currentCount = Math.min(legendaryCount, badge.requiredCount)
+        shouldUnlock = legendaryCount >= badge.requiredCount
+      }
+
+      const wasUnlocked = badge.unlockedAt != null
+      const update: any = { currentCount }
+      if (shouldUnlock && !wasUnlocked) {
+        update.unlockedAt = Date.now()
+        setNewBadge(badge.name)
+        setTimeout(() => setNewBadge(null), 3000)
+      }
+
+      await db.badges.update(badge.id!, update)
+    }
+  }, [badges, achievements, allBoxHistory, allTransactions])
+
+  useEffect(() => {
+    updateBadges()
+  }, [updateBadges])
 
   const todayExpense = useLiveQuery(
     () => db.transactions
@@ -28,22 +103,12 @@ export default function GamePage() {
     [today]
   )
 
-  const [opening, setOpening] = useState(false)
-  const [result, setResult] = useState<typeof defaultPrizes[0] | null>(null)
-
-  useEffect(() => {
-    if (prizes && prizes.length === 0) {
-      db.prizes.bulkAdd(defaultPrizes as any)
-    }
-  }, [prizes])
-
-  const canOpen = (todayExpense || 0) > 0 && !todayBox
+  const canOpenBox = (todayExpense || 0) > 0 && !todayBox
 
   const handleOpen = async () => {
-    if (!canOpen || !prizes || opening) return
+    if (!canOpenBox || !prizes || opening) return
 
     setOpening(true)
-
     await new Promise((r) => setTimeout(r, 800))
 
     const rand = Math.random()
@@ -127,20 +192,20 @@ export default function GamePage() {
           ) : (
             <motion.button
               key="button"
-              whileTap={canOpen ? { scale: 0.95 } : {}}
+              whileTap={canOpenBox ? { scale: 0.95 } : {}}
               onClick={handleOpen}
-              disabled={!canOpen}
+              disabled={!canOpenBox}
               className={`mx-auto w-40 h-40 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${
                 opening
                   ? 'border-primary bg-primary/5 animate-pulse'
-                  : canOpen
+                  : canOpenBox
                   ? 'border-primary bg-primary/5 hover:bg-primary/10 cursor-pointer'
                   : 'border-border bg-bg cursor-not-allowed'
               }`}
             >
               <span className="text-4xl mb-2">{opening ? '✨' : '🎁'}</span>
               <span className="text-sm text-sub">
-                {opening ? '开启中...' : canOpen ? '点击开启！' : '今日已用完'}
+                {opening ? '开启中...' : canOpenBox ? '点击开启！' : todayBox ? '今日已用完' : '记一笔支出即可开启'}
               </span>
             </motion.button>
           )}
@@ -163,6 +228,56 @@ export default function GamePage() {
         )}
       </div>
 
+      {/* New badge notification */}
+      <AnimatePresence>
+        {newBadge && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-primary text-white px-6 py-3 rounded-full shadow-lg text-sm font-medium"
+          >
+            🎉 解锁新徽章：{newBadge}！
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {badges && badges.length > 0 && (
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
+          <h2 className="text-sm font-medium text-text mb-3">🎖️ 徽章墙</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {badges.map((badge) => {
+              const unlocked = badge.unlockedAt != null
+              const progress = Math.min(badge.currentCount / badge.requiredCount, 1)
+              return (
+                <div
+                  key={badge.id}
+                  className={`p-3 rounded-xl text-center border transition-all ${
+                    unlocked
+                      ? 'bg-primary/5 border-primary/20'
+                      : 'bg-bg border-border'
+                  }`}
+                >
+                  <span className="text-2xl">{unlocked ? badge.icon : '🔒'}</span>
+                  <p className="text-xs text-text mt-1 font-medium">{badge.name}</p>
+                  <p className="text-[10px] text-sub mt-0.5">{badge.description}</p>
+                  <div className="mt-2 h-1.5 bg-border/30 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress * 100}%` }}
+                      className={`h-full rounded-full ${unlocked ? 'bg-primary' : 'bg-sub/30'}`}
+                    />
+                  </div>
+                  <p className="text-[10px] text-sub mt-1">
+                    {badge.currentCount}/{badge.requiredCount}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {Object.keys(groupedAchievements).length > 0 && (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
           <h2 className="text-sm font-medium text-text mb-3">🏆 已收集</h2>
@@ -177,31 +292,6 @@ export default function GamePage() {
                   <span className="text-base">{achievement.prizeIcon}</span>
                   <span className="text-xs text-text">{name}</span>
                   <span className="text-xs text-primary font-medium">×{count}</span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {badges && badges.length > 0 && (
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
-          <h2 className="text-sm font-medium text-text mb-3">🎖️ 徽章墙</h2>
-          <div className="grid grid-cols-3 gap-3">
-            {badges.map((badge) => {
-              const unlocked = badge.unlockedAt != null
-              return (
-                <div
-                  key={badge.id}
-                  className={`p-3 rounded-xl text-center border ${
-                    unlocked ? 'bg-primary/5 border-primary/20' : 'bg-bg border-border'
-                  }`}
-                >
-                  <span className="text-2xl">{unlocked ? badge.icon : '🔒'}</span>
-                  <p className="text-xs text-text mt-1 font-medium">{badge.name}</p>
-                  <p className="text-xs text-sub mt-0.5">
-                    {badge.currentCount}/{badge.requiredCount}
-                  </p>
                 </div>
               )
             })}

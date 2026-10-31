@@ -54,7 +54,7 @@ export default function AmountInput() {
 
     const hint = getEquivalentHint(num)
     if (hint) {
-      setHintText(`约等于 ${hint.icon} ${hint.text}`)
+      setHintText(`≈ ${hint.icon} ${hint.text}`)
       setShowHint(true)
       setTimeout(() => {
         setShowHint(false)

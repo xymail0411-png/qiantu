@@ -81,7 +81,7 @@ export default function ConvertPage() {
 
   const amount = todayExpense || 0
 
-  const physicalItems = equivalents?.filter((e) => !e.isCustom) || []
+  const physicalItems = equivalents || []
   const experienceItems = experienceEquivalents
 
   const laborHours = hourlyWage && parseFloat(hourlyWage) > 0

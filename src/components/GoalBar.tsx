@@ -5,6 +5,27 @@ import { defaultEquivalents } from '../data/equivalents'
 export default function GoalBar() {
   const goal = useLiveQuery(() => db.goals.orderBy('createdAt').last())
 
+  const handleSetGoal = async () => {
+    const title = prompt('目标名称（如：本月存3000）')
+    if (!title) return
+
+    const targetStr = prompt('目标金额')
+    if (!targetStr) return
+    const targetAmount = parseFloat(targetStr)
+    if (!targetAmount || targetAmount <= 0) return
+
+    const deadlineStr = prompt('截止日期（如：2026-11-30）')
+    if (!deadlineStr) return
+
+    await db.goals.add({
+      title,
+      targetAmount,
+      currentAmount: 0,
+      deadline: deadlineStr,
+      createdAt: Date.now(),
+    })
+  }
+
   if (!goal) {
     return (
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
@@ -75,25 +96,4 @@ export default function GoalBar() {
       </div>
     </div>
   )
-}
-
-async function handleSetGoal() {
-  const title = prompt('目标名称（如：本月存3000）')
-  if (!title) return
-
-  const targetStr = prompt('目标金额')
-  if (!targetStr) return
-  const targetAmount = parseFloat(targetStr)
-  if (!targetAmount || targetAmount <= 0) return
-
-  const deadlineStr = prompt('截止日期（如：2026-11-30）')
-  if (!deadlineStr) return
-
-  await db.goals.add({
-    title,
-    targetAmount,
-    currentAmount: 0,
-    deadline: deadlineStr,
-    createdAt: Date.now(),
-  })
 }

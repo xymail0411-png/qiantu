@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>荒诞价值换算器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff3e9d;
+    --yellow: #ffd23f;
+    --lime: #7ed957;
+    --blue: #3ec6ff;
+    --purple: #b14aed;
+    --orange: #ff6b35;
+    --bg-start: #fff5f7;
+    --bg-end: #f0f4ff;
+    --card-bg: #ffffff;
+    --text-dark: #1a1a2e;
+    --text-mid: #4a4a6a;
+    --border-radius: 20px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 50%, #fef3e2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Floating background emojis */
+  .bg-emoji {
+    position: fixed;
+    font-size: 2rem;
+    opacity: 0.12;
+    pointer-events: none;
+    animation: floatEmoji 20s infinite ease-in-out;
+    z-index: 0;
+  }
+  .bg-emoji:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; font-size: 2.5rem; }
+  .bg-emoji:nth-child(2) { top: 15%; right: 8%; animation-delay: -3s; font-size: 1.8rem; }
+  .bg-emoji:nth-child(3) { top: 40%; left: 3%; animation-delay: -7s; font-size: 3rem; }
+  .bg-emoji:nth-child(4) { top: 60%; right: 5%; animation-delay: -11s; font-size: 2rem; }
+  .bg-emoji:nth-child(5) { top: 80%; left: 10%; animation-delay: -15s; font-size: 2.2rem; }
+  .bg-emoji:nth-child(6) { top: 25%; left: 80%; animation-delay: -5s; font-size: 1.6rem; }
+  .bg-emoji:nth-child(7) { top: 70%; left: 85%; animation-delay: -9s; font-size: 2.8rem; }
+  .bg-emoji:nth-child(8) { top: 50%; left: 15%; animation-delay: -13s; font-size: 1.5rem; }
+
+  @keyframes floatEmoji {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(10deg); }
+    50% { transform: translateY(10px) rotate(-5deg); }
+    75% { transform: translateY(-15px) rotate(8deg); }
+  }
+
+  /* Title */
+  .title {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .title h1 {
+    font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    line-height: 1.3;
+  }
+  .title .subtitle {
+    font-size: 1rem;
+    color: var(--text-mid);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  /* Input section */
+  .input-section {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow:
+      0 4px 24px rgba(255, 62, 157, 0.08),
+      0 1px 4px rgba(0,0,0,0.04);
+    border: 2.5px solid transparent;
+    background-clip: padding-box;
+  }
+  .input-section::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    border-radius: calc(var(--border-radius) + 2.5px);
+    background: linear-gradient(135deg, var(--pink), var(--yellow), var(--lime), var(--blue), var(--purple));
+    z-index: -1;
+    opacity: 0.6;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .form-group label .label-emoji {
+    margin-right: 4px;
+  }
+
+  .amount-input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1.2rem;
+    font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+    font-weight: 600;
+    border: 2.5px solid #e8e8f0;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafe;
+    color: var(--text-dark);
+  }
+  .amount-input:focus {
+    border-color: var(--pink);
+    box-shadow: 0 0 0 4px rgba(255, 62, 157, 0.1);
+    background: #fff;
+  }
+  .amount-input::placeholder {
+    color: #c0c0d0;
+    font-weight: 400;
+  }
+
+  .item-select {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1.05rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    border: 2.5px solid #e8e8f0;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafe;
+    color: var(--text-dark);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 44px;
+  }
+  .item-select:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px rgba(177, 74, 237, 0.1);
+    background-color: #fff;
+  }
+
+  .price-hint {
+    font-size: 0.78rem;
+    color: #999;
+    margin-top: 6px;
+    padding-left: 4px;
+    transition: color 0.2s;
+  }
+
+  .convert-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.15rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 900;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 4px 16px rgba(255, 62, 157, 0.3);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  .convert-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255, 62, 157, 0.4);
+  }
+  .convert-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 62, 157, 0.3);
+  }
+
+  /* Result card */
+  .result-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 520px;
+    margin-top: 32px;
+    perspective: 800px;
+  }
+
+  .result-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 36px 32px;
+    box-shadow:
+      0 8px 40px rgba(177, 74, 237, 0.1),
+      0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .result-card.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Decorative corner blobs */
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    border-radius: 50%;
+    opacity: 0.12;
+  }
+  .result-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -30px;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .result-header .header-emoji {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 8px;
+    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .result-header h2 {
+    font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .result-line {
+    position: relative;
+    padding: 18px 20px;
+    border-radius: 16px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .result-line:last-child {
+    margin-bottom: 0;
+  }
+  .result-line.line-1 {
+    background: linear-gradient(135deg, #fff5f7, #fef0ff);
+    border: 2px solid #fce4f0;
+  }
+  .result-line.line-2 {
+    background: linear-gradient(135deg, #f0f8ff, #f5f0ff);
+    border: 2px solid #e0eafc;
+  }
+
+  .result-line .line-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    margin-bottom: 4px;
+  }
+  .result-line .line-content {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .result-line .line-content .big-number {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: inline-block;
+    margin: 0 2px;
+  }
+  .result-line.line-1 .big-number {
+    color: var(--pink);
+  }
+  .result-line.line-2 .big-number {
+    color: var(--purple);
+  }
+  .result-line .line-content .item-emoji {
+    font-size: 1.4rem;
+    vertical-align: middle;
+    margin: 0 2px;
+  }
+
+  .result-line .line-content .percent-text {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.3rem;
+    color: var(--orange);
+  }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 2.5s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% {
+      opacity: 1;
+      transform: translateY(-20px) rotate(0deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(100vh) rotate(720deg) scale(0.3);
+    }
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  /* Footer */
+  .footer-note {
+    position: relative;
+    z-index: 1;
+    margin-top: 32px;
+    font-size: 0.78rem;
+    color: #b0b0c0;
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    .title h1 { font-size: 2rem; }
+    .input-section { padding: 24px 20px; }
+    .result-card { padding: 28px 20px; }
+    .result-line .line-content { font-size: 1rem; }
+    .result-line .line-content .big-number { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating background emojis -->
+<div class="bg-emoji">🥚</div>
+<div class="bg-emoji">🧋</div>
+<div class="bg-emoji">🚀</div>
+<div class="bg-emoji">🚢</div>
+<div class="bg-emoji">🎧</div>
+<div class="bg-emoji">🏠</div>
+<div class="bg-emoji">💰</div>
+<div class="bg-emoji">✨</div>
+
+<!-- Title -->
+<div class="title">
+  <h1>🤪 荒诞价值换算器</h1>
+  <div class="subtitle">输入金额，看看你的钱能买多少离谱的东西</div>
+</div>
+
+<!-- Input Section -->
+<div class="input-section">
+  <div class="form-group">
+    <label><span class="label-emoji">💵</span> 金额（人民币元）</label>
+    <input type="number" class="amount-input" id="amountInput" placeholder="输入金额，例如 100" min="0" step="any">
+  </div>
+  <div class="form-group">
+    <label><span class="label-emoji">🎯</span> 选择参照物品</label>
+    <select class="item-select" id="itemSelect">
+      <option value="鸭蛋">🥚 鸭蛋</option>
+      <option value="奶茶">🧋 奶茶</option>
+      <option value="降噪耳机">🎧 降噪耳机</option>
+      <option value="一个月房租">🏠 一个月房租</option>
+      <option value="航母">🚢 航母</option>
+      <option value="航天飞机">🚀 航天飞机</option>
+    </select>
+    <div class="price-hint" id="priceHint">单价：¥1.5 / 个</div>
+  </div>
+  <button class="convert-btn" id="convertBtn">✨ 开始换算 ✨</button>
+</div>
+
+<!-- Result Card -->
+<div class="result-wrapper" id="resultWrapper" style="display:none;">
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <span class="header-emoji" id="headerEmoji">🤯</span>
+      <h2>换算结果</h2>
+    </div>
+    <div class="result-line line-1">
+      <div class="line-label">第一行 · 你能买</div>
+      <div class="line-content" id="line1Content"></div>
+    </div>
+    <div class="result-line line-2">
+      <div class="line-label">第二行 · 荒诞换算</div>
+      <div class="line-content" id="line2Content"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">🔒 所有计算在浏览器本地完成，不上传任何数据</div>
+
+<!-- Confetti container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+  // Item data: name, price (CNY), emoji
+  const ITEMS = {
+    '鸭蛋':     { price: 1.5,          emoji: '🥚' },
+    '奶茶':     { price: 18,           emoji: '🧋' },
+    '降噪耳机': { price: 2500,         emoji: '🎧' },
+    '一个月房租': { price: 4500,        emoji: '🏠' },
+    '航母':     { price: 50000000000,  emoji: '🚢' },
+    '航天飞机': { price: 150000000000, emoji: '🚀' },
+  };
+
+  const ITEM_NAMES = Object.keys(ITEMS);
+
+  const amountInput = document.getElementById('amountInput');
+  const itemSelect = document.getElementById('itemSelect');
+  const priceHint = document.getElementById('priceHint');
+  const convertBtn = document.getElementById('convertBtn');
+  const resultWrapper = document.getElementById('resultWrapper');
+  const resultCard = document.getElementById('resultCard');
+  const headerEmoji = document.getElementById('headerEmoji');
+  const line1Content = document.getElementById('line1Content');
+  const line2Content = document.getElementById('line2Content');
+  const confettiContainer = document.getElementById('confettiContainer');
+
+  // Update price hint when selection changes
+  function updatePriceHint() {
+    const name = itemSelect.value;
+    const item = ITEMS[name];
+    priceHint.textContent = `单价：¥${formatPrice(item.price)} / ${name === '一个月房租' ? '月' : '个'}`;
+  }
+
+  function formatPrice(p) {
+    if (p >= 1e8) return (p / 1e8).toFixed(0) + '亿';
+    if (p >= 1e4) return (p / 1e4).toFixed(0) + '万';
+    if (Number.isInteger(p)) return p.toLocaleString();
+    return p.toFixed(2);
+  }
+
+  itemSelect.addEventListener('change', updatePriceHint);
+  updatePriceHint();
+
+  // Get a random item different from the selected one
+  function getRandomOtherItem(selectedName) {
+    const others = ITEM_NAMES.filter(n => n !== selectedName);
+    return others[Math.floor(Math.random() * others.length)];
+  }
+
+  // Format a number nicely
+  function formatNumber(n) {
+    if (n >= 1e8) return (n / 1e8).toFixed(2) + ' 亿';
+    if (n >= 1e4) return (n / 1e4).toFixed(2) + ' 万';
+    if (n >= 100) return Math.floor(n).toLocaleString();
+    if (n >= 1) return n.toFixed(2);
+    if (n >= 0.001) return n.toFixed(4);
+    return n.toExponential(2);
+  }
+
+  // Format percentage
+  function formatPercent(ratio) {
+    const pct = ratio * 100;
+    if (pct < 0.0001) return pct.toExponential(2) + '%';
+    if (pct < 0.01) return pct.toFixed(6) + '%';
+    if (pct < 1) return pct.toFixed(4) + '%';
+    return pct.toFixed(2) + '%';
+  }
+
+  // Confetti effect
+  function launchConfetti() {
+    confettiContainer.innerHTML = '';
+    const colors = ['#ff3e9d', '#ffd23f', '#7ed957', '#3ec6ff', '#b14aed', '#ff6b35'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.top = '-10px';
+      piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 0.8 + 's';
+      piece.style.animationDuration = (1.8 + Math.random() * 1.2) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confettiContainer.appendChild(piece);
+    }
+    setTimeout(() => { confettiContainer.innerHTML = ''; }, 3500);
+  }
+
+  // Main conversion
+  function convert() {
+    const amount = parseFloat(amountInput.value);
+    if (isNaN(amount) || amount <= 0) {
+      amountInput.focus();
+      amountInput.style.borderColor = '#ff3e3e';
+      setTimeout(() => { amountInput.style.borderColor = ''; }, 1000);
+      return;
+    }
+
+    const selectedName = itemSelect.value;
+    const selectedItem = ITEMS[selectedName];
+    const otherName = getRandomOtherItem(selectedName);
+    const otherItem = ITEMS[otherName];
+
+    // Line 1: how many of the selected item
+    const count1 = amount / selectedItem.price;
+    const unit1 = selectedName === '一个月房租' ? '个月' : '个';
+    line1Content.innerHTML =
+      `<span class="item-emoji">${selectedItem.emoji}</span> 你能买 <span class="big-number">${formatNumber(count1)}</span> ${unit1} ${selectedName}`;
+
+    // Line 2: how many of the other item
+    const count2 = amount / otherItem.price;
+    const unit2 = otherName === '一个月房租' ? '个月' : '个';
+
+    if (count2 < 0.000001) {
+      const pct = formatPercent(count2);
+      line2Content.innerHTML =
+        `如果换成 <span class="item-emoji">${otherItem.emoji}</span> ${otherName}，相当于它的 <span class="percent-text">${pct}</span>`;
+    } else {
+      line2Content.innerHTML =
+        `如果换成 <span class="item-emoji">${otherItem.emoji}</span> ${otherName}，你拥有 <span class="big-number">${formatNumber(count2)}</span> ${unit2}`;
+    }
+
+    // Header emoji reaction
+    const reactions = ['🤯', '😱', '🤑', '😂', '🫠', '💀', '🥴', '😎'];
+    headerEmoji.textContent = reactions[Math.floor(Math.random() * reactions.length)];
+
+    // Show result card
+    resultWrapper.style.display = 'block';
+    // Force reflow for animation
+    resultCard.classList.remove('visible');
+    void resultCard.offsetWidth;
+    resultCard.classList.add('visible');
+
+    // Scroll to result
+    setTimeout(() => {
+      resultWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
+    // Confetti!
+    launchConfetti();
+  }
+
+  convertBtn.addEventListener('click', convert);
+  amountInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') convert();
+  });
+</script>
+</body>
+</html>

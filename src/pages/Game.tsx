@@ -269,18 +269,6 @@ export default function GamePage() {
           {todayExpense ? `今日消费 ¥${(todayExpense || 0).toFixed(2)}` : '记一笔支出即可开启盲盒'}
         </p>
 
-        {todayExpense && todayExpense > 0 && (
-          <p className="text-[10px] text-sub/60 mt-1">
-            {(() => {
-              if (todayExpense < 30) return '🌟 消费克制中，传说概率 +15%'
-              if (todayExpense < 80) return '✨ 适度消费，传说概率 +8%'
-              if (todayExpense < 150) return '📊 正常概率'
-              if (todayExpense < 300) return '⚠️ 消费偏高，传说概率 -5%'
-              return '🚨 消费过高，传说概率 -8%'
-            })()}
-          </p>
-        )}
-
         {result && (
           <motion.button
             initial={{ opacity: 0 }}
@@ -312,7 +300,7 @@ export default function GamePage() {
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
           <h2 className="text-sm font-medium text-text mb-3">🎖️ 徽章墙</h2>
           <div className="grid grid-cols-2 gap-3">
-            {(showAllBadges ? badges : badges.slice(0, 4)).map((badge) => {
+            {(showAllBadges ? badges : badges.slice(0, 2)).map((badge) => {
               const unlocked = badge.unlockedAt != null
               const progress = Math.min(badge.currentCount / badge.requiredCount, 1)
               return (
@@ -341,12 +329,12 @@ export default function GamePage() {
               )
             })}
           </div>
-          {badges.length > 4 && (
+          {badges.length > 2 && (
             <button
               onClick={() => setShowAllBadges(!showAllBadges)}
               className="w-full mt-3 py-2 text-xs text-primary font-medium"
             >
-              {showAllBadges ? '收起' : `展开全部 (${badges.length - 4} 个更多)`}
+              {showAllBadges ? '收起' : `展开全部 (${badges.length - 2} 个更多)`}
             </button>
           )}
         </div>

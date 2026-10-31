@@ -124,6 +124,7 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
         animate={{ opacity: 1, x: offset }}
         transition={{ delay: i * 0.04, type: 'spring', stiffness: 300, damping: 30 }}
         className="relative flex items-center justify-between py-3.5 px-4 bg-white border-b border-border/50 last:border-0 touch-none"
+        title="左滑删除记录"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -197,15 +198,30 @@ export default function Timeline() {
           ‹
         </button>
 
-        <button
-          onClick={goToday}
-          className={`text-sm font-medium transition-colors ${
-            isToday ? 'text-primary' : 'text-text'
-          }`}
-        >
-          {formatDateLabel(currentDate)}
-          <span className="text-sub font-normal ml-1">{formatShortDate(currentDate)}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goToday}
+            className={`text-sm font-medium transition-colors ${
+              isToday ? 'text-primary' : 'text-text'
+            }`}
+          >
+            {formatDateLabel(currentDate)}
+            <span className="text-sub font-normal ml-1">{formatShortDate(currentDate)}</span>
+          </button>
+
+          {isToday && filteredTransactions.length > 0 && (
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-sub/40 hover:text-expense hover:bg-expense/10 transition-colors"
+              title="重置今日记录"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          )}
+        </div>
 
         <button
           onClick={goNextDay}
@@ -252,19 +268,6 @@ export default function Timeline() {
         >
           +
         </button>
-
-        {isToday && filteredTransactions.length > 0 && (
-          <button
-            onClick={() => setShowResetConfirm(true)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sub/50 hover:text-expense hover:bg-expense/10 transition-colors"
-            title="重置今日记录"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* Reset confirmation */}

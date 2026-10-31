@@ -25,6 +25,12 @@ export default function ConvertPage() {
   const [wishPrice, setWishPrice] = useState('')
   const [wishIcon, setWishIcon] = useState('🎁')
 
+  // Custom equivalent state
+  const [showAddEquiv, setShowAddEquiv] = useState(false)
+  const [equivName, setEquivName] = useState('')
+  const [equivPrice, setEquivPrice] = useState('')
+  const [equivIcon, setEquivIcon] = useState('📦')
+
   // Three modules toggle state
   const [showPhysical, setShowPhysical] = useState(true)
   const [showExperience, setShowExperience] = useState(false)
@@ -49,6 +55,24 @@ export default function ConvertPage() {
     setWishPrice('')
     setWishIcon('🎁')
     setShowAddWish(false)
+  }
+
+  const handleAddEquiv = async () => {
+    if (!equivName || !equivPrice) return
+    await db.equivalents.add({
+      name: equivName,
+      price: parseFloat(equivPrice),
+      icon: equivIcon,
+      isCustom: true,
+    })
+    setEquivName('')
+    setEquivPrice('')
+    setEquivIcon('📦')
+    setShowAddEquiv(false)
+  }
+
+  const handleDeleteEquiv = async (id: number) => {
+    await db.equivalents.delete(id)
   }
 
   const handleDeleteWish = async (id: number) => {
@@ -110,23 +134,82 @@ export default function ConvertPage() {
           exit={{ opacity: 0, height: 0 }}
           className="bg-white rounded-2xl p-5 shadow-sm border border-border"
         >
-          <h3 className="text-sm font-medium text-text mb-3">🍚 实物参照</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-text">🍚 实物参照</h3>
+            <button
+              onClick={() => setShowAddEquiv(!showAddEquiv)}
+              className="text-xs text-primary font-medium"
+            >
+              {showAddEquiv ? '取消' : '+ 添加'}
+            </button>
+          </div>
+
+          {showAddEquiv && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="mb-4 p-3 bg-bg rounded-xl space-y-2"
+            >
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="图标"
+                  value={equivIcon}
+                  onChange={(e) => setEquivIcon(e.target.value)}
+                  className="w-14 px-2 py-2 text-center bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
+                />
+                <input
+                  type="text"
+                  placeholder="名称"
+                  value={equivName}
+                  onChange={(e) => setEquivName(e.target.value)}
+                  className="flex-1 px-3 py-2 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="价格"
+                  value={equivPrice}
+                  onChange={(e) => setEquivPrice(e.target.value)}
+                  className="flex-1 px-3 py-2 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
+                />
+                <button
+                  onClick={handleAddEquiv}
+                  className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
+                >
+                  添加
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           <div className="space-y-2">
             {physicalItems.map((eq) => {
               const count = amount / eq.price
               return (
                 <div
                   key={eq.id}
-                  className="flex items-center justify-between py-2 px-3 bg-bg rounded-xl"
+                  className="relative flex items-center justify-between py-2 px-3 bg-bg rounded-xl"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{eq.icon}</span>
                     <span className="text-sm text-text">{eq.name}</span>
                     <span className="text-xs text-sub">¥{eq.price}/个</span>
                   </div>
-                  <span className="text-sm font-medium text-primary">
-                    × {count >= 1 ? Math.floor(count) : count.toFixed(1)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-primary">
+                      × {count >= 1 ? Math.floor(count) : count.toFixed(1)}
+                    </span>
+                    {eq.isCustom && (
+                      <button
+                        onClick={() => handleDeleteEquiv(eq.id!)}
+                        className="text-sub/40 hover:text-expense text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               )
             })}

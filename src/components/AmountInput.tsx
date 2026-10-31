@@ -13,20 +13,30 @@ export default function AmountInput() {
 
   if (!selectedCategory) return null
 
-  const getEquivalentHint = (num: number): string => {
-    const hints: string[] = []
+  const getEquivalentHint = (num: number): { icon: string; text: string } | null => {
+    // Find the most iconic equivalent (count closest to whole number, between 1-50)
+    let bestMatch: { icon: string; text: string; score: number } | null = null
+
     for (const eq of defaultEquivalents) {
       const count = num / eq.price
-      if (count >= 0.5 && count <= 100) {
-        if (count >= 1) {
-          hints.push(`${Math.floor(count)}${eq.name}`)
-        } else {
-          hints.push(`${count.toFixed(1)}${eq.name}`)
+      if (count >= 1 && count <= 50) {
+        // Score: prefer whole numbers, prefer counts between 2-20
+        const wholeNumberScore = 1 - Math.abs(count - Math.round(count))
+        const rangeScore = count >= 2 && count <= 20 ? 1 : 0.5
+        const score = wholeNumberScore * rangeScore
+
+        if (!bestMatch || score > bestMatch.score) {
+          const displayCount = count >= 10 ? Math.floor(count) : count.toFixed(1)
+          bestMatch = {
+            icon: eq.icon,
+            text: `${displayCount}${eq.name}`,
+            score,
+          }
         }
       }
     }
-    if (hints.length === 0) return ''
-    return `≈ ${hints.slice(0, 2).join(' 或 ')}`
+
+    return bestMatch ? { icon: bestMatch.icon, text: bestMatch.text } : null
   }
 
   const handleConfirm = async () => {
@@ -44,7 +54,7 @@ export default function AmountInput() {
 
     const hint = getEquivalentHint(num)
     if (hint) {
-      setHintText(hint)
+      setHintText(`约等于 ${hint.icon} ${hint.text}`)
       setShowHint(true)
       setTimeout(() => {
         setShowHint(false)
@@ -155,22 +165,30 @@ export default function AmountInput() {
             >
               确认记账
             </motion.button>
-
-            <AnimatePresence>
-              {showHint && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-3 text-center text-xs text-sub"
-                >
-                  {hintText}
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
+
+      {/* Centered popup hint */}
+      <AnimatePresence>
+        {showHint && (
+          <motion.div
+            className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: -20 }}
+              className="bg-white rounded-2xl px-8 py-6 shadow-2xl border border-border"
+            >
+              <p className="text-lg font-medium text-text text-center">{hintText}</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   )
 }

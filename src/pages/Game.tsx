@@ -24,6 +24,7 @@ export default function GamePage() {
   const [opening, setOpening] = useState(false)
   const [result, setResult] = useState<typeof defaultPrizes[0] | null>(null)
   const [newBadge, setNewBadge] = useState<string | null>(null)
+  const [showAllBadges, setShowAllBadges] = useState(false)
 
   useEffect(() => {
     if (prizes && prizes.length === 0) {
@@ -311,7 +312,7 @@ export default function GamePage() {
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
           <h2 className="text-sm font-medium text-text mb-3">🎖️ 徽章墙</h2>
           <div className="grid grid-cols-2 gap-3">
-            {badges.map((badge) => {
+            {(showAllBadges ? badges : badges.slice(0, 4)).map((badge) => {
               const unlocked = badge.unlockedAt != null
               const progress = Math.min(badge.currentCount / badge.requiredCount, 1)
               return (
@@ -340,6 +341,14 @@ export default function GamePage() {
               )
             })}
           </div>
+          {badges.length > 4 && (
+            <button
+              onClick={() => setShowAllBadges(!showAllBadges)}
+              className="w-full mt-3 py-2 text-xs text-primary font-medium"
+            >
+              {showAllBadges ? '收起' : `展开全部 (${badges.length - 4} 个更多)`}
+            </button>
+          )}
         </div>
       )}
 

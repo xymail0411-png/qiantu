@@ -132,12 +132,9 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
         onMouseUp={handleMouseUp}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full bg-white border-2 border-border flex items-center justify-center text-[10px]">
-          {getCategoryIcon(t.category)}
-        </div>
-
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
+            <span className="text-base">{getCategoryIcon(t.category)}</span>
             <span className="text-sm font-medium text-text">{t.category}</span>
             <span className="text-xs text-sub">{time}</span>
           </div>
@@ -259,10 +256,13 @@ export default function Timeline() {
         {isToday && filteredTransactions.length > 0 && (
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-sub hover:text-expense transition-colors"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sub/50 hover:text-expense hover:bg-expense/10 transition-colors"
             title="重置今日记录"
           >
-            ↺
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
           </button>
         )}
       </div>
@@ -308,9 +308,7 @@ export default function Timeline() {
       {/* Timeline records */}
       <div className="flex-1">
         {filteredTransactions.length > 0 ? (
-          <div className="relative pl-6">
-            <div className="absolute left-[9px] top-2 bottom-2 w-px bg-border" />
-
+          <div>
             {filteredTransactions.map((t, i) => (
               <SwipeableRecord
                 key={t.id}

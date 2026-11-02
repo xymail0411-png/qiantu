@@ -99,6 +99,8 @@ export default function GoalBar() {
         deadline: finalDeadline,
       })
     } else {
+      // 单目标模式：创建新目标前，先清空所有旧目标
+      await db.goals.clear()
       await db.goals.add({
         title: title || '存钱目标',
         targetAmount: amount,

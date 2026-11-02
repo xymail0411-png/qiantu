@@ -5,7 +5,7 @@ import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
 
 export default function AmountInput() {
-  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, triggerRefresh } = useAppStore()
+  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [showHint, setShowHint] = useState(false)
@@ -83,6 +83,7 @@ export default function AmountInput() {
         setAmount('')
         setNote('')
         closeAmountInput()
+        closeCategoryPage()
         triggerRefresh()
         hintTimeoutRef.current = null
       }, 1500)
@@ -90,6 +91,7 @@ export default function AmountInput() {
       setAmount('')
       setNote('')
       closeAmountInput()
+      closeCategoryPage()
       triggerRefresh()
     }
   }

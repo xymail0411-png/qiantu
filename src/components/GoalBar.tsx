@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GoalBar() {
@@ -21,26 +21,63 @@ export default function GoalBar() {
   }, [goal])
 
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({ title: '', targetAmount: '', deadline: '' })
+  const [formData, setFormData] = useState({ 
+    title: '', 
+    targetAmount: '', 
+    deadline: '',
+    milestones: [50, 100]
+  })
   const [hasDeadline, setHasDeadline] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [celebrationText, setCelebrationText] = useState('')
+  const [prevProgress, setPrevProgress] = useState(0)
+
+  useEffect(() => {
+    if (!goal || totalSavings === undefined) return
+    
+    const currentProgress = (Math.max(0, totalSavings) / goal.targetAmount) * 100
+    const milestones = goal.milestones || [50, 100]
+    const achieved = goal.achievedMilestones || []
+    
+    for (const m of milestones) {
+      if (prevProgress < m && currentProgress >= m && !achieved.includes(m)) {
+        setCelebrationText(m === 100 ? '🎉 目标达成！' : `🎊 达成 ${m}% 里程碑！`)
+        setShowCelebration(true)
+        setTimeout(() => setShowCelebration(false), 3000)
+        
+        db.goals.update(goal.id!, {
+          achievedMilestones: [...achieved, m]
+        })
+        break
+      }
+    }
+    
+    setPrevProgress(currentProgress)
+  }, [totalSavings, goal])
 
   const openForm = () => {
     if (goal) {
       setFormData({ 
         title: goal.title, 
         targetAmount: goal.targetAmount.toString(),
-        deadline: goal.deadline || ''
+        deadline: goal.deadline || '',
+        milestones: goal.milestones || [50, 100]
       })
       setHasDeadline(!!goal.deadline)
     } else {
-      setFormData({ title: '', targetAmount: '', deadline: '' })
+      setFormData({ 
+        title: '', 
+        targetAmount: '', 
+        deadline: '',
+        milestones: [50, 100]
+      })
       setHasDeadline(false)
     }
     setShowForm(true)
   }
 
   const handleSubmit = async () => {
-    const { title, targetAmount, deadline } = formData
+    const { title, targetAmount, deadline, milestones } = formData
     if (!targetAmount) return
     const amount = parseFloat(targetAmount)
     if (!amount || amount <= 0) return
@@ -52,6 +89,7 @@ export default function GoalBar() {
         title: title || '存钱目标',
         targetAmount: amount,
         deadline: finalDeadline,
+        milestones: milestones,
       })
     } else {
       await db.goals.add({
@@ -59,10 +97,12 @@ export default function GoalBar() {
         targetAmount: amount,
         currentAmount: 0,
         deadline: finalDeadline,
+        milestones: milestones,
+        achievedMilestones: [],
         createdAt: Date.now(),
       })
     }
-    setFormData({ title: '', targetAmount: '', deadline: '' })
+    setFormData({ title: '', targetAmount: '', deadline: '', milestones: [50, 100] })
     setShowForm(false)
   }
 
@@ -117,6 +157,9 @@ export default function GoalBar() {
     ? Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : null
 
+  const milestones = goal.milestones || [50, 100]
+  const achievedMilestones = goal.achievedMilestones || []
+
   return (
     <>
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
@@ -136,13 +179,22 @@ export default function GoalBar() {
           </button>
         </div>
 
-        <div className="w-full h-3 bg-bg rounded-full overflow-hidden mb-2">
+        <div className="relative w-full h-3 bg-bg rounded-full overflow-hidden mb-2">
           <motion.div
             className={`h-full rounded-full transition-all duration-500 ${isNegative ? 'bg-expense' : 'bg-primary'}`}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
+          {milestones.map((m) => (
+            <div
+              key={m}
+              className={`absolute top-0 h-full w-0.5 ${
+                achievedMilestones.includes(m) ? 'bg-primary' : 'bg-border'
+              }`}
+              style={{ left: `${m}%` }}
+            />
+          ))}
         </div>
 
         <div className="flex items-center justify-between text-xs">
@@ -178,6 +230,29 @@ export default function GoalBar() {
         title="编辑目标"
         submitText="保存"
       />
+
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
+          >
+            <motion.div
+              animate={{ 
+                y: [0, -20, 0],
+                rotate: [0, -5, 5, 0]
+              }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+              className="bg-white rounded-3xl px-10 py-8 shadow-2xl border-2 border-primary/30"
+            >
+              <p className="text-2xl font-bold text-text text-center">{celebrationText}</p>
+              <p className="text-sm text-sub text-center mt-2">继续加油！</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -198,13 +273,20 @@ function GoalFormModal({
   onClose: () => void
   onSubmit: () => void
   onDelete?: () => void
-  formData: { title: string; targetAmount: string; deadline: string }
-  setFormData: (data: { title: string; targetAmount: string; deadline: string }) => void
+  formData: { title: string; targetAmount: string; deadline: string; milestones: number[] }
+  setFormData: (data: { title: string; targetAmount: string; deadline: string; milestones: number[] }) => void
   hasDeadline: boolean
   setHasDeadline: (v: boolean) => void
   title: string
   submitText: string
 }) {
+  const toggleMilestone = (m: number) => {
+    const milestones = formData.milestones.includes(m)
+      ? formData.milestones.filter(x => x !== m)
+      : [...formData.milestones, m].sort((a, b) => a - b)
+    setFormData({ ...formData, milestones })
+  }
+
   return (
     <AnimatePresence>
       {show && (
@@ -221,7 +303,7 @@ function GoalFormModal({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-6 pb-8 sm:mx-4"
+            className="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-6 pb-8 sm:mx-4 max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-10 h-1 bg-border rounded-full mx-auto mb-4 sm:hidden" />
@@ -291,6 +373,25 @@ function GoalFormModal({
                     + 添加截止日期
                   </button>
                 )}
+              </div>
+
+              <div>
+                <label className="text-xs text-sub mb-2 block">里程碑（达成时庆祝）</label>
+                <div className="flex flex-wrap gap-2">
+                  {[25, 50, 75, 100].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => toggleMilestone(m)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        formData.milestones.includes(m)
+                          ? 'bg-primary text-white'
+                          : 'bg-bg text-sub hover:bg-border'
+                      }`}
+                    >
+                      {m}%
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

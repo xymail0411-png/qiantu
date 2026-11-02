@@ -2,24 +2,19 @@ import { expenseCategories, incomeCategories } from '../data/categories'
 import { useAppStore } from '../store'
 import type { Category } from '../data/categories'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
-function CategoryButton({ cat, index }: { cat: Category; index: number }) {
-  const { openAmountInput } = useAppStore()
-
-  const handleClick = () => {
-    openAmountInput(cat)
-  }
-
+function CategoryButton({ cat, index, onClick }: { cat: Category; index: number; onClick: (cat: Category) => void }) {
   return (
     <motion.button
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.015 }}
       whileTap={{ scale: 0.9 }}
-      onClick={handleClick}
+      onClick={() => onClick(cat)}
       className="flex flex-col items-center gap-1.5"
     >
-      <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-border flex items-center justify-center text-2xl transition-shadow hover:shadow-md">
+    <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-border flex items-center justify-center text-2xl transition-shadow hover:shadow-md">
         {cat.icon}
       </div>
       <span className="text-xs text-sub">{cat.label}</span>
@@ -28,9 +23,21 @@ function CategoryButton({ cat, index }: { cat: Category; index: number }) {
 }
 
 export default function CategoryPage() {
-  const { showCategoryPage, closeCategoryPage } = useAppStore()
+  const { showCategoryPage, closeCategoryPage, openAmountInput } = useAppStore()
+  const [lastCategory, setLastCategory] = useState<Category | null>(null)
 
   if (!showCategoryPage) return null
+
+  const handleCategoryClick = (cat: Category) => {
+    setLastCategory(cat)
+    openAmountInput(cat)
+  }
+
+  const handleRecordAgain = () => {
+    if (lastCategory) {
+      openAmountInput(lastCategory)
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-bg">
@@ -43,7 +50,15 @@ export default function CategoryPage() {
             <span>←</span> 返回
           </button>
           <h2 className="text-base font-medium text-text">记账</h2>
-          <div className="w-16" />
+          {lastCategory && (
+            <button
+              onClick={handleRecordAgain}
+              className="text-primary text-sm font-medium"
+            >
+              再记一笔
+            </button>
+          )}
+          {!lastCategory && <div className="w-16" />}
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-8">
@@ -54,7 +69,7 @@ export default function CategoryPage() {
             </div>
             <div className="grid grid-cols-5 gap-4">
               {expenseCategories.map((cat, i) => (
-                <CategoryButton key={cat.label} cat={cat} index={i} />
+                <CategoryButton key={cat.label} cat={cat} index={i} onClick={handleCategoryClick} />
               ))}
             </div>
           </div>
@@ -66,7 +81,7 @@ export default function CategoryPage() {
             </div>
             <div className="grid grid-cols-5 gap-4">
               {incomeCategories.map((cat, i) => (
-                <CategoryButton key={cat.label} cat={cat} index={i} />
+                <CategoryButton key={cat.label} cat={cat} index={i} onClick={handleCategoryClick} />
               ))}
             </div>
           </div>

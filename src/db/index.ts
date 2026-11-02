@@ -17,6 +17,8 @@ export interface Goal {
   targetAmount: number
   currentAmount: number
   deadline: string
+  milestones?: number[]
+  achievedMilestones?: number[]
   createdAt: number
 }
 

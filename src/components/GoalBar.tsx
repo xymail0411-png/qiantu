@@ -21,31 +21,48 @@ export default function GoalBar() {
   }, [goal])
 
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({ title: '', targetAmount: '' })
+  const [formData, setFormData] = useState({ title: '', targetAmount: '', deadline: '' })
+  const [hasDeadline, setHasDeadline] = useState(false)
+
+  const openForm = () => {
+    if (goal) {
+      setFormData({ 
+        title: goal.title, 
+        targetAmount: goal.targetAmount.toString(),
+        deadline: goal.deadline || ''
+      })
+      setHasDeadline(!!goal.deadline)
+    } else {
+      setFormData({ title: '', targetAmount: '', deadline: '' })
+      setHasDeadline(false)
+    }
+    setShowForm(true)
+  }
 
   const handleSubmit = async () => {
-    const { title, targetAmount } = formData
+    const { title, targetAmount, deadline } = formData
     if (!targetAmount) return
     const amount = parseFloat(targetAmount)
     if (!amount || amount <= 0) return
 
+    const finalDeadline = hasDeadline && deadline ? deadline : ''
+
     if (goal) {
       await db.goals.update(goal.id, {
-        title: title || goal.title,
+        title: title || '存钱目标',
         targetAmount: amount,
+        deadline: finalDeadline,
       })
     } else {
-      const d = new Date()
-      d.setMonth(d.getMonth() + 1)
       await db.goals.add({
         title: title || '存钱目标',
         targetAmount: amount,
         currentAmount: 0,
-        deadline: d.toISOString().slice(0, 10),
+        deadline: finalDeadline,
         createdAt: Date.now(),
       })
     }
-    setFormData({ title: '', targetAmount: '' })
+    setFormData({ title: '', targetAmount: '', deadline: '' })
     setShowForm(false)
   }
 
@@ -65,7 +82,7 @@ export default function GoalBar() {
               <p className="text-xs text-sub/60 mt-0.5">点击设定一个存钱目标吧</p>
             </div>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={openForm}
               className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium"
             >
               设定目标
@@ -73,70 +90,17 @@ export default function GoalBar() {
           </div>
         </div>
 
-        <AnimatePresence>
-          {showForm && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-              onClick={() => setShowForm(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.9 }}
-                className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3 className="text-base font-medium text-text mb-4">设定存钱目标</h3>
-                
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-sub mb-1 block">目标名称（选填）</label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="存钱目标"
-                      className="w-full px-3 py-2 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs text-sub mb-1 block">目标金额（元）</label>
-                    <input
-                      type="number"
-                      value={formData.targetAmount}
-                      onChange={(e) => setFormData({ ...formData, targetAmount: e.target.value })}
-                      placeholder="3000"
-                      min="0"
-                      step="0.01"
-                      autoFocus
-                      className="w-full px-3 py-2 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={() => setShowForm(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-bg text-text text-sm font-medium"
-                  >
-                    取消
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!formData.targetAmount}
-                    className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    确认
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <GoalFormModal
+          show={showForm}
+          onClose={() => setShowForm(false)}
+          onSubmit={handleSubmit}
+          formData={formData}
+          setFormData={setFormData}
+          hasDeadline={hasDeadline}
+          setHasDeadline={setHasDeadline}
+          title="设定存钱目标"
+          submitText="确认"
+        />
       </>
     )
   }
@@ -146,6 +110,12 @@ export default function GoalBar() {
   const progress = Math.min((displayAmount / goal.targetAmount) * 100, 100)
   const remaining = goal.targetAmount - displayAmount
   const isNegative = currentAmount < 0
+  
+  const deadline = goal.deadline ? new Date(goal.deadline) : null
+  const now = new Date()
+  const daysLeft = deadline 
+    ? Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+    : null
 
   return (
     <>
@@ -154,13 +124,13 @@ export default function GoalBar() {
           <div className="flex items-center gap-2">
             <span className="text-base">🎯</span>
             <span className="text-sm font-medium text-text">{goal.title}</span>
+            {daysLeft !== null && (
+              <span className="text-xs text-sub/60">· {daysLeft}天</span>
+            )}
           </div>
           <button
-            onClick={() => {
-              setFormData({ title: goal.title, targetAmount: goal.targetAmount.toString() })
-              setShowForm(true)
-            }}
-            className="text-xs text-primary"
+            onClick={openForm}
+            className="text-xs text-primary font-medium"
           >
             编辑
           </button>
@@ -196,38 +166,92 @@ export default function GoalBar() {
         )}
       </div>
 
-      <AnimatePresence>
-        {showForm && (
+      <GoalFormModal
+        show={showForm}
+        onClose={() => setShowForm(false)}
+        onSubmit={handleSubmit}
+        onDelete={handleDeleteGoal}
+        formData={formData}
+        setFormData={setFormData}
+        hasDeadline={hasDeadline}
+        setHasDeadline={setHasDeadline}
+        title="编辑目标"
+        submitText="保存"
+      />
+    </>
+  )
+}
+
+function GoalFormModal({
+  show,
+  onClose,
+  onSubmit,
+  onDelete,
+  formData,
+  setFormData,
+  hasDeadline,
+  setHasDeadline,
+  title,
+  submitText,
+}: {
+  show: boolean
+  onClose: () => void
+  onSubmit: () => void
+  onDelete?: () => void
+  formData: { title: string; targetAmount: string; deadline: string }
+  setFormData: (data: { title: string; targetAmount: string; deadline: string }) => void
+  hasDeadline: boolean
+  setHasDeadline: (v: boolean) => void
+  title: string
+  submitText: string
+}) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          onClick={onClose}
+        >
+          <div className="absolute inset-0 bg-black/30" />
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-            onClick={() => setShowForm(false)}
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-6 pb-8 sm:mx-4"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-base font-medium text-text mb-4">编辑目标</h3>
+            <div className="w-10 h-1 bg-border rounded-full mx-auto mb-4 sm:hidden" />
+            
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-lg font-medium text-text">{title}</h3>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-bg flex items-center justify-center text-sub hover:text-text transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-sub mb-1.5 block">目标名称</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="存钱目标"
+                  className="w-full px-4 py-3 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
               
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-sub mb-1 block">目标名称（选填）</label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="存钱目标"
-                    className="w-full px-3 py-2 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary"
-                  />
-                </div>
-                
-                <div>
-                  <label className="text-xs text-sub mb-1 block">目标金额（元）</label>
+              <div>
+                <label className="text-xs text-sub mb-1.5 block">目标金额</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sub text-sm">¥</span>
                   <input
                     type="number"
                     value={formData.targetAmount}
@@ -236,38 +260,68 @@ export default function GoalBar() {
                     min="0"
                     step="0.01"
                     autoFocus
-                    className="w-full px-3 py-2 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs text-sub">截止日期</label>
+                  <button
+                    onClick={() => setHasDeadline(!hasDeadline)}
+                    className={`text-xs font-medium transition-colors ${hasDeadline ? 'text-primary' : 'text-sub'}`}
+                  >
+                    {hasDeadline ? '已设置' : '选填'}
+                  </button>
+                </div>
+                {hasDeadline ? (
+                  <input
+                    type="date"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                    min={new Date().toISOString().slice(0, 10)}
+                    className="w-full px-4 py-3 rounded-xl bg-bg border border-border text-sm text-text focus:outline-none focus:border-primary transition-colors"
+                  />
+                ) : (
+                  <button
+                    onClick={() => setHasDeadline(true)}
+                    className="w-full py-3 rounded-xl border-2 border-dashed border-border text-sub text-sm hover:border-primary hover:text-primary transition-colors"
+                  >
+                    + 添加截止日期
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              {onDelete && (
                 <button
-                  onClick={handleDeleteGoal}
-                  className="py-2.5 px-4 rounded-xl bg-expense/10 text-expense text-sm font-medium"
+                  onClick={onDelete}
+                  className="py-3 px-4 rounded-xl bg-expense/10 text-expense text-sm font-medium"
                 >
                   删除
                 </button>
-                <div className="flex-1 flex gap-3">
-                  <button
-                    onClick={() => setShowForm(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-bg text-text text-sm font-medium"
-                  >
-                    取消
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!formData.targetAmount}
-                    className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    保存
-                  </button>
-                </div>
+              )}
+              <div className="flex-1 flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="flex-1 py-3 rounded-xl bg-bg text-text text-sm font-medium"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={onSubmit}
+                  disabled={!formData.targetAmount}
+                  className="flex-1 py-3 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitText}
+                </button>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

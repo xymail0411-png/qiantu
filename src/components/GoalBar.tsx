@@ -30,6 +30,7 @@ export default function GoalBar() {
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationText, setCelebrationText] = useState('')
   const [prevProgress, setPrevProgress] = useState(0)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     if (!goal || totalSavings === undefined) return
@@ -46,7 +47,7 @@ export default function GoalBar() {
         setTimeout(() => setShowCelebration(false), 3000)
         db.goals.update(goal.id!, { achievedMilestones: [...achieved, 50] })
       }
-      // 检查100%里程碑
+      // 检查100%达成（不插旗，只庆祝）
       else if (prevProgress < 100 && currentProgress >= 100 && !achieved.includes(100)) {
         setCelebrationText('🎉 目标达成！你太棒了！')
         setShowCelebration(true)
@@ -113,8 +114,9 @@ export default function GoalBar() {
 
   const handleDeleteGoal = async () => {
     if (!goal?.id) return
-    if (!confirm('确定要删除这个目标吗？')) return
     await db.goals.delete(goal.id)
+    setShowDeleteConfirm(false)
+    setShowForm(false)
   }
 
   if (!goal) {
@@ -190,24 +192,17 @@ export default function GoalBar() {
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
-          {/* 50% 旗帜标记 */}
-          <div
-            className="absolute top-0 -translate-y-full"
-            style={{ left: '50%', transform: 'translate(-50%, -100%)' }}
-          >
-            <span className={`text-sm ${achievedMilestones.includes(50) ? 'opacity-100' : 'opacity-40'}`}>
-              🚩
-            </span>
-          </div>
-          {/* 100% 旗帜标记 */}
-          <div
-            className="absolute top-0 -translate-y-full"
-            style={{ left: 'calc(100% - 8px)', transform: 'translate(-50%, -100%)' }}
-          >
-            <span className={`text-sm ${achievedMilestones.includes(100) ? 'opacity-100' : 'opacity-40'}`}>
-              🚩
-            </span>
-          </div>
+          {/* 50% 旗帜标记 - 只在达成时显示 */}
+          {achievedMilestones.includes(50) && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="absolute top-0 -translate-y-full"
+              style={{ left: '50%', transform: 'translate(-50%, -100%)' }}
+            >
+              <span className="text-base">🚩</span>
+            </motion.div>
+          )}
         </div>
 
         <div className="flex items-center justify-between text-xs">
@@ -235,7 +230,7 @@ export default function GoalBar() {
         show={showForm}
         onClose={() => setShowForm(false)}
         onSubmit={handleSubmit}
-        onDelete={handleDeleteGoal}
+        onDelete={() => setShowDeleteConfirm(true)}
         formData={formData}
         setFormData={setFormData}
         hasDeadline={hasDeadline}
@@ -266,6 +261,13 @@ export default function GoalBar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <DeleteConfirmModal
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteGoal}
+        goalTitle={goal.title}
+      />
     </>
   )
 }
@@ -406,6 +408,67 @@ function GoalFormModal({
                   {submitText}
                 </button>
               </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+function DeleteConfirmModal({
+  show,
+  onClose,
+  onConfirm,
+  goalTitle,
+}: {
+  show: boolean
+  onClose: () => void
+  onConfirm: () => void
+  goalTitle: string
+}) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[60] flex items-center justify-center"
+          onClick={onClose}
+        >
+          <div className="absolute inset-0 bg-black/30" />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-xs bg-white rounded-2xl p-6 mx-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-expense/10 flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">🗑️</span>
+              </div>
+              <h3 className="text-base font-medium text-text mb-1">删除目标</h3>
+              <p className="text-sm text-sub">
+                确定要删除「{goalTitle}」吗？<br />
+                <span className="text-xs text-sub/60">删除后无法恢复</span>
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 py-2.5 rounded-xl bg-bg text-text text-sm font-medium"
+              >
+                取消
+              </button>
+              <button
+                onClick={onConfirm}
+                className="flex-1 py-2.5 rounded-xl bg-expense text-white text-sm font-medium"
+              >
+                删除
+              </button>
             </div>
           </motion.div>
         </motion.div>

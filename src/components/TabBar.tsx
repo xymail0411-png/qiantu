@@ -3,7 +3,7 @@ import { useAppStore } from '../store'
 
 const tabs = [
   { key: 'home' as const, icon: '📝', label: '记一下' },
-  { key: 'convert' as const, icon: '💡', label: '换算' },
+  { key: 'convert' as const, icon: '💡', label: '值多少' },
   { key: 'game' as const, icon: '🎰', label: '盲盒' },
 ]
 

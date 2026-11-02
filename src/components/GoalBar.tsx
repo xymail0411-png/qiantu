@@ -24,8 +24,7 @@ export default function GoalBar() {
   const [formData, setFormData] = useState({ 
     title: '', 
     targetAmount: '', 
-    deadline: '',
-    milestones: [50, 100]
+    deadline: ''
   })
   const [hasDeadline, setHasDeadline] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
@@ -36,19 +35,23 @@ export default function GoalBar() {
     if (!goal || totalSavings === undefined) return
     
     const currentProgress = (Math.max(0, totalSavings) / goal.targetAmount) * 100
-    const milestones = goal.milestones || [50, 100]
     const achieved = goal.achievedMilestones || []
     
-    for (const m of milestones) {
-      if (prevProgress < m && currentProgress >= m && !achieved.includes(m)) {
-        setCelebrationText(m === 100 ? '🎉 目标达成！' : `🎊 达成 ${m}% 里程碑！`)
+    // 只在进度增长时触发，下降时不触发
+    if (currentProgress > prevProgress) {
+      // 检查50%里程碑
+      if (prevProgress < 50 && currentProgress >= 50 && !achieved.includes(50)) {
+        setCelebrationText('🎊 已存到一半啦！继续冲！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 3000)
-        
-        db.goals.update(goal.id!, {
-          achievedMilestones: [...achieved, m]
-        })
-        break
+        db.goals.update(goal.id!, { achievedMilestones: [...achieved, 50] })
+      }
+      // 检查100%里程碑
+      else if (prevProgress < 100 && currentProgress >= 100 && !achieved.includes(100)) {
+        setCelebrationText('🎉 目标达成！你太棒了！')
+        setShowCelebration(true)
+        setTimeout(() => setShowCelebration(false), 3000)
+        db.goals.update(goal.id!, { achievedMilestones: [...achieved, 100] })
       }
     }
     
@@ -60,16 +63,14 @@ export default function GoalBar() {
       setFormData({ 
         title: goal.title, 
         targetAmount: goal.targetAmount.toString(),
-        deadline: goal.deadline || '',
-        milestones: goal.milestones || [50, 100]
+        deadline: goal.deadline || ''
       })
       setHasDeadline(!!goal.deadline)
     } else {
       setFormData({ 
         title: '', 
         targetAmount: '', 
-        deadline: '',
-        milestones: [50, 100]
+        deadline: ''
       })
       setHasDeadline(false)
     }
@@ -77,7 +78,7 @@ export default function GoalBar() {
   }
 
   const handleSubmit = async () => {
-    const { title, targetAmount, deadline, milestones } = formData
+    const { title, targetAmount, deadline } = formData
     if (!targetAmount) return
     const amount = parseFloat(targetAmount)
     if (!amount || amount <= 0) return
@@ -89,7 +90,6 @@ export default function GoalBar() {
         title: title || '存钱目标',
         targetAmount: amount,
         deadline: finalDeadline,
-        milestones: milestones,
       })
     } else {
       await db.goals.add({
@@ -97,12 +97,11 @@ export default function GoalBar() {
         targetAmount: amount,
         currentAmount: 0,
         deadline: finalDeadline,
-        milestones: milestones,
         achievedMilestones: [],
         createdAt: Date.now(),
       })
     }
-    setFormData({ title: '', targetAmount: '', deadline: '', milestones: [50, 100] })
+    setFormData({ title: '', targetAmount: '', deadline: '' })
     setShowForm(false)
   }
 
@@ -157,7 +156,6 @@ export default function GoalBar() {
     ? Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : null
 
-  const milestones = goal.milestones || [50, 100]
   const achievedMilestones = goal.achievedMilestones || []
 
   return (
@@ -186,15 +184,20 @@ export default function GoalBar() {
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
-          {milestones.map((m) => (
-            <div
-              key={m}
-              className={`absolute top-0 h-full w-0.5 ${
-                achievedMilestones.includes(m) ? 'bg-primary' : 'bg-border'
-              }`}
-              style={{ left: `${m}%` }}
-            />
-          ))}
+          {/* 50% 标记 */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-colors ${
+              achievedMilestones.includes(50) ? 'bg-primary' : 'bg-border'
+            }`}
+            style={{ left: '50%', transform: 'translate(-50%, -50%)' }}
+          />
+          {/* 100% 标记 */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-colors ${
+              achievedMilestones.includes(100) ? 'bg-primary' : 'bg-border'
+            }`}
+            style={{ left: '100%', transform: 'translate(-50%, -50%)' }}
+          />
         </div>
 
         <div className="flex items-center justify-between text-xs">
@@ -273,20 +276,13 @@ function GoalFormModal({
   onClose: () => void
   onSubmit: () => void
   onDelete?: () => void
-  formData: { title: string; targetAmount: string; deadline: string; milestones: number[] }
-  setFormData: (data: { title: string; targetAmount: string; deadline: string; milestones: number[] }) => void
+  formData: { title: string; targetAmount: string; deadline: string }
+  setFormData: (data: { title: string; targetAmount: string; deadline: string }) => void
   hasDeadline: boolean
   setHasDeadline: (v: boolean) => void
   title: string
   submitText: string
 }) {
-  const toggleMilestone = (m: number) => {
-    const milestones = formData.milestones.includes(m)
-      ? formData.milestones.filter(x => x !== m)
-      : [...formData.milestones, m].sort((a, b) => a - b)
-    setFormData({ ...formData, milestones })
-  }
-
   return (
     <AnimatePresence>
       {show && (
@@ -373,25 +369,6 @@ function GoalFormModal({
                     + 添加截止日期
                   </button>
                 )}
-              </div>
-
-              <div>
-                <label className="text-xs text-sub mb-2 block">里程碑（达成时庆祝）</label>
-                <div className="flex flex-wrap gap-2">
-                  {[25, 50, 75, 100].map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => toggleMilestone(m)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        formData.milestones.includes(m)
-                          ? 'bg-primary text-white'
-                          : 'bg-bg text-sub hover:bg-border'
-                      }`}
-                    >
-                      {m}%
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
 

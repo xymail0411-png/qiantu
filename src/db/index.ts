@@ -7,6 +7,7 @@ export interface Transaction {
   amount: number
   type: 'expense' | 'income'
   note?: string
+  goalId?: number
   createdAt: number
 }
 
@@ -83,7 +84,7 @@ class QianTuDB extends Dexie {
   constructor() {
     super('QianTu')
     this.version(1).stores({
-      transactions: '++id, date, category, type, createdAt',
+      transactions: '++id, date, category, type, goalId, createdAt',
       goals: '++id, createdAt',
       wishlist: '++id, addedAt',
       equivalents: '++id, isCustom',

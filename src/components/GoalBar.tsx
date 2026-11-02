@@ -58,6 +58,12 @@ export default function GoalBar() {
     setPrevProgress(currentProgress)
   }, [totalSavings, goal])
 
+  // 当目标改变时，重置进度状态
+  useEffect(() => {
+    setPrevProgress(0)
+    setShowCelebration(false)
+  }, [goal?.id])
+
   const openForm = () => {
     if (goal) {
       setFormData({ 
@@ -177,27 +183,31 @@ export default function GoalBar() {
           </button>
         </div>
 
-        <div className="relative w-full h-3 bg-bg rounded-full overflow-hidden mb-2">
+        <div className="relative w-full h-3 bg-bg rounded-full overflow-visible mb-2">
           <motion.div
             className={`h-full rounded-full transition-all duration-500 ${isNegative ? 'bg-expense' : 'bg-primary'}`}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
-          {/* 50% 标记 */}
+          {/* 50% 旗帜标记 */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-colors ${
-              achievedMilestones.includes(50) ? 'bg-primary' : 'bg-border'
-            }`}
-            style={{ left: '50%', transform: 'translate(-50%, -50%)' }}
-          />
-          {/* 100% 标记 */}
+            className="absolute top-0 -translate-y-full"
+            style={{ left: '50%', transform: 'translate(-50%, -100%)' }}
+          >
+            <span className={`text-sm ${achievedMilestones.includes(50) ? 'opacity-100' : 'opacity-40'}`}>
+              🚩
+            </span>
+          </div>
+          {/* 100% 旗帜标记 */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-colors ${
-              achievedMilestones.includes(100) ? 'bg-primary' : 'bg-border'
-            }`}
-            style={{ left: '100%', transform: 'translate(-50%, -50%)' }}
-          />
+            className="absolute top-0 -translate-y-full"
+            style={{ left: 'calc(100% - 8px)', transform: 'translate(-50%, -100%)' }}
+          >
+            <span className={`text-sm ${achievedMilestones.includes(100) ? 'opacity-100' : 'opacity-40'}`}>
+              🚩
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center justify-between text-xs">

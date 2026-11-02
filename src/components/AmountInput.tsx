@@ -1,20 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useRef, useEffect } from 'react'
-import { db, type Goal } from '../db'
+import { db } from '../db'
 import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
-import { useLiveQuery } from 'dexie-react-hooks'
 
 export default function AmountInput() {
   const { showAmountInput, selectedCategory, currentDate, closeAmountInput, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
-  const [selectedGoalId, setSelectedGoalId] = useState<number | undefined>()
   const [showHint, setShowHint] = useState(false)
   const [hintText, setHintText] = useState('')
   const hintTimeoutRef = useRef<number | null>(null)
-
-  const goals = useLiveQuery(() => db.goals.orderBy('createdAt').reverse().toArray())
 
   useEffect(() => {
     return () => {
@@ -71,7 +67,6 @@ export default function AmountInput() {
       amount: num,
       type: selectedCategory.type,
       note: note || undefined,
-      goalId: selectedGoalId,
       createdAt: Date.now(),
     })
 
@@ -87,7 +82,6 @@ export default function AmountInput() {
         setShowHint(false)
         setAmount('')
         setNote('')
-        setSelectedGoalId(undefined)
         closeAmountInput()
         triggerRefresh()
         hintTimeoutRef.current = null
@@ -95,7 +89,6 @@ export default function AmountInput() {
     } else {
       setAmount('')
       setNote('')
-      setSelectedGoalId(undefined)
       closeAmountInput()
       triggerRefresh()
     }
@@ -128,7 +121,7 @@ export default function AmountInput() {
         >
           <motion.div
             className="absolute inset-0 bg-black/30"
-            onClick={() => { closeAmountInput(); setAmount(''); setNote(''); setSelectedGoalId(undefined) }}
+            onClick={() => { closeAmountInput(); setAmount(''); setNote('') }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -153,7 +146,7 @@ export default function AmountInput() {
                 </span>
               </div>
               <button
-                onClick={() => { closeAmountInput(); setAmount(''); setNote(''); setSelectedGoalId(undefined) }}
+                onClick={() => { closeAmountInput(); setAmount(''); setNote('') }}
                 className="text-sub text-xl leading-none p-1"
               >
                 ✕
@@ -172,39 +165,8 @@ export default function AmountInput() {
               placeholder="添加备注（选填）"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full px-4 py-3 bg-bg rounded-xl border border-border text-sm text-text placeholder-sub mb-3 outline-none focus:border-primary transition-colors"
+              className="w-full px-4 py-3 bg-bg rounded-xl border border-border text-sm text-text placeholder-sub mb-4 outline-none focus:border-primary transition-colors"
             />
-
-            {goals && goals.length > 0 && (
-              <div className="mb-4">
-                <p className="text-xs text-sub mb-2">关联目标（选填）</p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedGoalId(undefined)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      selectedGoalId === undefined
-                        ? 'bg-primary text-white'
-                        : 'bg-bg text-sub hover:bg-border'
-                    }`}
-                  >
-                    不关联
-                  </button>
-                  {goals.map((goal: Goal) => (
-                    <button
-                      key={goal.id}
-                      onClick={() => setSelectedGoalId(goal.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        selectedGoalId === goal.id
-                          ? 'bg-primary text-white'
-                          : 'bg-bg text-sub hover:bg-border'
-                      }`}
-                    >
-                      🎯 {goal.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div className="grid grid-cols-4 gap-2 mb-4">
               {keys.map((key) => (

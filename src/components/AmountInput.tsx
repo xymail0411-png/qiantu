@@ -5,7 +5,7 @@ import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
 
 export default function AmountInput() {
-  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, triggerRefresh } = useAppStore()
+  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, openAmountInput, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [showHint, setShowHint] = useState(false)
@@ -96,6 +96,33 @@ export default function AmountInput() {
     }
   }
 
+  const handleRecordAnother = async () => {
+    const num = parseFloat(amount)
+    if (!num || num <= 0) return
+
+    await db.transactions.add({
+      date: currentDate,
+      category: selectedCategory.label,
+      amount: num,
+      type: selectedCategory.type,
+      note: note || undefined,
+      createdAt: Date.now(),
+    })
+
+    // 清空输入，保持界面打开
+    setAmount('')
+    setNote('')
+    triggerRefresh()
+    
+    // 显示提示
+    const hint = getEquivalentHint(num)
+    if (hint) {
+      setHintText(`≈ ${hint.icon} ${hint.text}`)
+      setShowHint(true)
+      setTimeout(() => setShowHint(false), 1000)
+    }
+  }
+
   const handleKeyPress = (key: string) => {
     if (key === '←') {
       setAmount((prev) => prev.slice(0, -1))
@@ -182,14 +209,24 @@ export default function AmountInput() {
               ))}
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={handleConfirm}
-              disabled={!amount || parseFloat(amount) <= 0}
-              className="w-full h-14 rounded-xl bg-primary text-white text-base font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-            >
-              确认记账
-            </motion.button>
+            <div className="flex gap-3">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleRecordAnother}
+                disabled={!amount || parseFloat(amount) <= 0}
+                className="flex-1 h-14 rounded-xl bg-primary/10 text-primary text-base font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+              >
+                再记一笔
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleConfirm}
+                disabled={!amount || parseFloat(amount) <= 0}
+                className="flex-1 h-14 rounded-xl bg-primary text-white text-base font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+              >
+                确认记账
+              </motion.button>
+            </div>
           </motion.div>
         </motion.div>
       )}

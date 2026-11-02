@@ -2,7 +2,6 @@ import { expenseCategories, incomeCategories } from '../data/categories'
 import { useAppStore } from '../store'
 import type { Category } from '../data/categories'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 
 function CategoryButton({ cat, index, onClick }: { cat: Category; index: number; onClick: (cat: Category) => void }) {
   return (
@@ -24,19 +23,11 @@ function CategoryButton({ cat, index, onClick }: { cat: Category; index: number;
 
 export default function CategoryPage() {
   const { showCategoryPage, closeCategoryPage, openAmountInput } = useAppStore()
-  const [lastCategory, setLastCategory] = useState<Category | null>(null)
 
   if (!showCategoryPage) return null
 
   const handleCategoryClick = (cat: Category) => {
-    setLastCategory(cat)
     openAmountInput(cat)
-  }
-
-  const handleRecordAgain = () => {
-    if (lastCategory) {
-      openAmountInput(lastCategory)
-    }
   }
 
   return (
@@ -50,15 +41,7 @@ export default function CategoryPage() {
             <span>←</span> 返回
           </button>
           <h2 className="text-base font-medium text-text">记账</h2>
-          {lastCategory && (
-            <button
-              onClick={handleRecordAgain}
-              className="text-primary text-sm font-medium"
-            >
-              再记一笔
-            </button>
-          )}
-          {!lastCategory && <div className="w-16" />}
+          <div className="w-16" />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-8">

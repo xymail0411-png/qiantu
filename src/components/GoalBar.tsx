@@ -9,8 +9,8 @@ export default function GoalBar() {
   const totalSavings = useLiveQuery(async () => {
     if (!goal) return 0
     const allTransactions = await db.transactions.toArray()
-    const goalCreatedDay = new Date(goal.createdAt).toISOString().slice(0, 10)
-    const relevantTransactions = allTransactions.filter(t => t.date >= goalCreatedDay)
+    // 只计算目标创建之后的交易，确保新目标从0开始
+    const relevantTransactions = allTransactions.filter(t => t.createdAt > goal.createdAt)
     const totalIncome = relevantTransactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)

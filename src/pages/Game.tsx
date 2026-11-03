@@ -387,7 +387,7 @@ export default function GamePage() {
               <span className="text-sm font-medium text-text">{result.name}</span>
               <span className={`text-xs mt-1 px-2 py-0.5 rounded-full font-medium ${
                 result.rarity === 'legendary' ? 'bg-lavender-light/50 text-lavender' :
-                result.rarity === 'rare' ? 'bg-warm-yellow/20 text-warm-yellow' :
+                result.rarity === 'rare' ? 'bg-warm-yellow/30 text-text' :
                 'bg-cream-dark text-sub'
               }`}>
                 {rarityLabels[result.rarity]}

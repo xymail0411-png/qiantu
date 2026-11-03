@@ -8,7 +8,7 @@ interface BlindBoxCardProps {
 
 const rarityConfig = {
   common: { bg: 'bg-cream-dark', border: 'border-border', label: '普通', labelBg: 'bg-border/30 text-sub' },
-  rare: { bg: 'bg-warm-yellow/15', border: 'border-warm-yellow/50', label: '稀有', labelBg: 'bg-warm-yellow/20 text-warm-yellow' },
+  rare: { bg: 'bg-warm-yellow/15', border: 'border-warm-yellow/50', label: '稀有', labelBg: 'bg-warm-yellow/30 text-text' },
   legendary: { bg: 'bg-lavender-light/30', border: 'border-lavender/50', label: '传说', labelBg: 'bg-lavender-light/50 text-lavender' },
 }
 

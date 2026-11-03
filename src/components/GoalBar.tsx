@@ -41,14 +41,14 @@ export default function GoalBar() {
     if (currentProgress > prevProgress) {
       // 检查50%里程碑
       if (prevProgress < 50 && currentProgress >= 50 && !achieved.includes(50)) {
-        setCelebrationText('🎊 一半啦！')
+        setCelebrationText('🎊 存到一半啦！继续冲！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
         db.goals.update(goal.id!, { achievedMilestones: [...achieved, 50] })
       }
       // 检查100%达成（不插旗，只庆祝）
       else if (prevProgress < 100 && currentProgress >= 100 && !achieved.includes(100)) {
-        setCelebrationText('🎉 达成！')
+        setCelebrationText('🎉 目标达成！你太棒了！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
         db.goals.update(goal.id!, { achievedMilestones: [...achieved, 100] })

@@ -316,7 +316,7 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
       </AnimatePresence>
 
       {/* Timeline records */}
-      <div className={`flex-1 overflow-y-auto min-h-0 transition-all duration-200 ${shouldCollapse ? 'max-h-0' : 'max-h-full'}`}>
+      <div className="flex-1 overflow-y-auto min-h-0">
         {filteredTransactions.length > 0 ? (
           <div>
             {(shouldCollapse ? filteredTransactions.slice(0, MAX_VISIBLE_RECORDS) : filteredTransactions).map((t, i) => (

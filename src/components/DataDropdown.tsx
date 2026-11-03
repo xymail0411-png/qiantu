@@ -122,15 +122,15 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/40"
+              className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
               onClick={handleToggle}
             />
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed left-4 top-1/2 -translate-y-1/2 z-50 w-80 max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col shadow-2xl md:left-8"
+              className="fixed z-50 w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col mx-4"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}

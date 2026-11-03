@@ -82,15 +82,15 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/40 flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: '100%', opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: '100%', opacity: 0 }}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-2xl lg:max-w-3xl max-h-[85vh] bg-white rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col md:mr-8 md:ml-auto"
+        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

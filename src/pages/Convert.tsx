@@ -24,6 +24,10 @@ export default function ConvertPage() {
   const [wishName, setWishName] = useState('')
   const [wishPrice, setWishPrice] = useState('')
   const [wishIcon, setWishIcon] = useState('🎁')
+  const [wishRating, setWishRating] = useState(3)
+  const [showIconPicker, setShowIconPicker] = useState(false)
+
+  const commonIcons = ['🎁', '🧋', '🎬', '🎮', '👕', '📱', '💻', '🎧', '📚', '✈️', '🍜', '🍰', '💄', '🎨', '⌚', '🏠']
 
   useEffect(() => {
     if (equivalents && equivalents.length === 0) {
@@ -49,16 +53,22 @@ export default function ConvertPage() {
 
   const handleAddWish = async () => {
     if (!wishName || !wishPrice) return
+    const price = parseFloat(wishPrice)
+    if (!price || price <= 0) return // 验证价格必须为正数
+    
     await db.wishlist.add({
       name: wishName,
-      price: parseFloat(wishPrice),
+      price: price,
       icon: wishIcon,
+      rating: wishRating,
       addedAt: Date.now(),
     })
     setWishName('')
     setWishPrice('')
     setWishIcon('🎁')
+    setWishRating(3)
     setShowAddWish(false)
+    setShowIconPicker(false)
   }
 
   const handleDeleteWish = async (id: number) => {
@@ -131,13 +141,12 @@ export default function ConvertPage() {
             >
               <div className="p-3 bg-bg rounded-xl space-y-2">
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="🎁"
-                    value={wishIcon}
-                    onChange={(e) => setWishIcon(e.target.value)}
-                    className="w-14 px-2 py-2.5 text-center bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
-                  />
+                  <button
+                    onClick={() => setShowIconPicker(!showIconPicker)}
+                    className="w-14 h-11 flex items-center justify-center bg-white rounded-lg border border-border text-2xl hover:border-primary transition-colors"
+                  >
+                    {wishIcon}
+                  </button>
                   <input
                     type="text"
                     placeholder="名称"
@@ -146,20 +155,69 @@ export default function ConvertPage() {
                     className="flex-1 px-3 py-2.5 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
                   />
                 </div>
+                
+                <AnimatePresence>
+                  {showIconPicker && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="grid grid-cols-8 gap-2 p-2 bg-white rounded-lg border border-border">
+                        {commonIcons.map((icon) => (
+                          <button
+                            key={icon}
+                            onClick={() => {
+                              setWishIcon(icon)
+                              setShowIconPicker(false)
+                            }}
+                            className={`w-8 h-8 rounded text-xl hover:bg-bg transition-colors ${
+                              wishIcon === icon ? 'bg-primary/10 ring-2 ring-primary' : ''
+                            }`}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div className="flex gap-2">
                   <input
                     type="number"
                     placeholder="价格"
                     value={wishPrice}
                     onChange={(e) => setWishPrice(e.target.value)}
+                    min="0.01"
+                    step="0.01"
                     className="flex-1 px-3 py-2.5 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
                   />
                   <button
                     onClick={handleAddWish}
-                    className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium"
+                    disabled={!wishName || !wishPrice || parseFloat(wishPrice) <= 0}
+                    className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     添加
                   </button>
+                </div>
+
+                <div>
+                  <p className="text-xs text-sub mb-1.5">重要程度</p>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setWishRating(star)}
+                        className={`text-2xl transition-transform hover:scale-110 ${
+                          star <= wishRating ? 'grayscale-0' : 'grayscale opacity-30'
+                        }`}
+                      >
+                        ⭐
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -168,7 +226,7 @@ export default function ConvertPage() {
 
         {wishlist && wishlist.length > 0 ? (
           <div className="space-y-3">
-            {wishlist.map((item) => {
+            {[...wishlist].sort((a, b) => (b.rating || 0) - (a.rating || 0)).map((item) => {
               const count = amount > 0 ? amount / item.price : 0
               return (
                 <motion.div
@@ -184,7 +242,16 @@ export default function ConvertPage() {
                   </button>
                   <span className="text-3xl">{item.icon}</span>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-text">{item.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-text">{item.name}</p>
+                      {item.rating && (
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: item.rating }).map((_, i) => (
+                            <span key={i} className="text-xs">⭐</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <p className="text-xs text-sub">¥{item.price}</p>
                   </div>
                   {amount > 0 ? (

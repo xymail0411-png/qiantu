@@ -26,6 +26,7 @@ export interface WishlistItem {
   name: string
   price: number
   icon: string
+  rating: number
   addedAt: number
 }
 

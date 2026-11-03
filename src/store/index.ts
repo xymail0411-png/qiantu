@@ -22,9 +22,6 @@ interface AppState {
 
   recordFilter: 'all' | 'expense' | 'income'
   setRecordFilter: (filter: 'all' | 'expense' | 'income') => void
-
-  refreshKey: number
-  triggerRefresh: () => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -56,7 +53,4 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   recordFilter: 'all',
   setRecordFilter: (filter) => set({ recordFilter: filter }),
-
-  refreshKey: 0,
-  triggerRefresh: () => set((s) => ({ refreshKey: s.refreshKey + 1 })),
 }))

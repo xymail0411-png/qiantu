@@ -3,6 +3,7 @@ import { allCategories } from '../data/categories'
 import { useAppStore } from '../store'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useRef, useEffect } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 function getCategoryIcon(label: string): string {
   return allCategories.find((c) => c.label === label)?.icon || '📝'
@@ -155,21 +156,20 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
 }
 
 export default function Timeline({ collapsedByParent = false }: { collapsedByParent?: boolean }) {
-  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage, refreshKey } = useAppStore()
+  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage } = useAppStore()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
-  const [transactions, setTransactions] = useState<any[]>([])
   const [isExpanded, setIsExpanded] = useState(false)
 
   const MAX_VISIBLE_RECORDS = 5
   const shouldCollapse = collapsedByParent || !isExpanded
 
-  useEffect(() => {
-    db.transactions
+  const transactions = useLiveQuery(
+    () => db.transactions
       .where('date')
       .equals(currentDate)
-      .sortBy('createdAt')
-      .then(setTransactions)
-  }, [currentDate, refreshKey])
+      .sortBy('createdAt'),
+    [currentDate]
+  )
 
   const today = new Date().toISOString().slice(0, 10)
   const isToday = currentDate === today
@@ -185,8 +185,6 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
 
   const handleDeleteRecord = async (id: number) => {
     await db.transactions.delete(id)
-    const { triggerRefresh } = useAppStore.getState()
-    triggerRefresh()
   }
 
   const handleResetToday = async () => {

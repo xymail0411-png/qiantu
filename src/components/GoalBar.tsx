@@ -9,15 +9,14 @@ export default function GoalBar() {
   const totalSavings = useLiveQuery(async () => {
     if (!goal) return 0
     const allTransactions = await db.transactions.toArray()
-    // 只计算目标创建之后的交易，确保新目标从0开始
-    const relevantTransactions = allTransactions.filter(t => t.createdAt > goal.createdAt)
-    const totalIncome = relevantTransactions
+    const totalIncome = allTransactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + t.amount, 0)
-    const totalExpense = relevantTransactions
+    const totalExpense = allTransactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0)
-    return totalIncome - totalExpense
+    const currentBalance = totalIncome - totalExpense
+    return currentBalance - (goal.startBalance || 0)
   }, [goal])
 
   const [showForm, setShowForm] = useState(false)
@@ -99,6 +98,12 @@ export default function GoalBar() {
         deadline: finalDeadline,
       })
     } else {
+      // 计算当前余额作为起始值，新目标从0开始
+      const allTransactions = await db.transactions.toArray()
+      const totalIncome = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const totalExpense = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      const startBalance = totalIncome - totalExpense
+
       // 单目标模式：创建新目标前，先清空所有旧目标
       await db.goals.clear()
       await db.goals.add({
@@ -107,6 +112,7 @@ export default function GoalBar() {
         currentAmount: 0,
         deadline: finalDeadline,
         achievedMilestones: [],
+        startBalance,
         createdAt: Date.now(),
       })
     }

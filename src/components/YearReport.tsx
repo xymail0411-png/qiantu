@@ -1,65 +1,40 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { db } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { allCategories } from '../data/categories'
 
 const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
 
-const GAME_COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+const CHART_COLORS = [
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
   '#F8C471', '#82E0AA'
 ]
 
-interface MonthData {
-  month: number
-  expense: number
-  income: number
-}
-
-interface CategoryData {
-  category: string
-  icon: string
-  amount: number
-  percentage: number
-  color: string
-}
-
 export default function YearReport({ onClose }: { onClose: () => void }) {
   const year = new Date().getFullYear()
-  const [view, setView] = useState<'trend' | 'proportion'>('trend')
+  const [view, setView] = useState<'monthly' | 'proportion'>('monthly')
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null)
 
-  const yearStart = `${year}-01-01`
-  const yearEnd = `${year}-12-31`
+  const transactions = useLiveQuery(() => db.transactions.toArray())
 
-  const transactions = useLiveQuery(
-    () => db.transactions
-      .where('date')
-      .between(yearStart, yearEnd + 'Z', true, true)
-      .toArray(),
-    [yearStart, yearEnd]
-  )
+  const yearTransactions = useMemo(() => {
+    if (!transactions) return []
+    return transactions.filter(t => t.date.startsWith(`${year}-`))
+  }, [transactions, year])
 
-  const [monthlyData, setMonthlyData] = useState<MonthData[]>([])
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([])
-  const [totalExpense, setTotalExpense] = useState(0)
-  const [totalIncome, setTotalIncome] = useState(0)
-
-  useEffect(() => {
-    if (!transactions) return
-
-    const monthly: Record<number, { expense: number; income: number }> = {}
+  const { monthlyData, categoryData, totalExpense, totalIncome } = useMemo(() => {
+    const monthly: { month: number; expense: number; income: number }[] = []
     const byCategory: Record<string, number> = {}
     let expense = 0
     let income = 0
 
     for (let i = 0; i < 12; i++) {
-      monthly[i] = { expense: 0, income: 0 }
+      monthly.push({ month: i, expense: 0, income: 0 })
     }
 
-    for (const t of transactions) {
+    for (const t of yearTransactions) {
       const month = parseInt(t.date.split('-')[1]) - 1
       if (t.type === 'expense') {
         monthly[month].expense += t.amount
@@ -71,16 +46,6 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
       }
     }
 
-    setMonthlyData(
-      Object.entries(monthly).map(([m, data]) => ({
-        month: parseInt(m),
-        ...data,
-      }))
-    )
-
-    setTotalExpense(expense)
-    setTotalIncome(income)
-
     const sortedCategories = Object.entries(byCategory)
       .sort(([, a], [, b]) => b - a)
       .map(([cat, amount], i) => ({
@@ -88,26 +53,29 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
         icon: allCategories.find((c) => c.label === cat)?.icon || '📝',
         amount,
         percentage: expense > 0 ? (amount / expense) * 100 : 0,
-        color: GAME_COLORS[i % GAME_COLORS.length],
+        color: CHART_COLORS[i % CHART_COLORS.length],
       }))
 
-    setCategoryData(sortedCategories)
-  }, [transactions])
+    return { monthlyData: monthly, categoryData: sortedCategories, totalExpense: expense, totalIncome: income }
+  }, [yearTransactions])
 
   const maxMonthly = Math.max(...monthlyData.map((m) => m.expense), 1)
-
   const selectedMonthData = selectedMonth !== null ? monthlyData.find((m) => m.month === selectedMonth) : null
-  const selectedMonthCategories = selectedMonth !== null
-    ? transactions
-        ?.filter((t) => {
-          const m = parseInt(t.date.split('-')[1]) - 1
-          return m === selectedMonth && t.type === 'expense'
-        })
-        .reduce<Record<string, number>>((acc, t) => {
-          acc[t.category] = (acc[t.category] || 0) + t.amount
-          return acc
-        }, {}) || {}
-    : null
+
+  const selectedMonthCategories = useMemo(() => {
+    if (selectedMonth === null) return null
+    const cats: Record<string, number> = {}
+    for (const t of yearTransactions) {
+      const m = parseInt(t.date.split('-')[1]) - 1
+      if (m === selectedMonth && t.type === 'expense') {
+        cats[t.category] = (cats[t.category] || 0) + t.amount
+      }
+    }
+    return cats
+  }, [selectedMonth, yearTransactions])
+
+  const R = 40
+  const C = 2 * Math.PI * R
 
   return (
     <motion.div
@@ -127,19 +95,12 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
       >
         {/* Header */}
         <div className="relative p-5 pb-4 bg-gradient-to-br from-primary/10 via-purple-50/50 to-pink-50/50">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm"
-          >
-            ✕
-          </button>
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm">✕</button>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">🎮</span>
-            <h2 className="text-lg font-bold text-text">{year}年度报告</h2>
+            <span className="text-2xl">📊</span>
+            <h2 className="text-lg font-bold text-text">{year}年度消费报告</h2>
           </div>
-          <p className="text-xs text-sub">你的消费冒险之旅</p>
-
-          {/* Summary badges */}
+          <p className="text-xs text-sub">看看你的钱都花哪了</p>
           <div className="flex gap-2 mt-4">
             <div className="flex-1 px-3 py-2 bg-white/80 rounded-xl backdrop-blur">
               <p className="text-[10px] text-sub">总支出</p>
@@ -156,25 +117,17 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        {/* Tab switcher */}
+        {/* Tabs */}
         <div className="flex px-5 pt-3 gap-2">
           <button
-            onClick={() => { setView('trend'); setSelectedMonth(null) }}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${
-              view === 'trend'
-                ? 'bg-primary text-white shadow-sm'
-                : 'bg-bg text-sub'
-            }`}
+            onClick={() => { setView('monthly'); setSelectedMonth(null) }}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${view === 'monthly' ? 'bg-primary text-white shadow-sm' : 'bg-bg text-sub'}`}
           >
-            📈 月度趋势
+            📈 每月支出
           </button>
           <button
-            onClick={() => setView('proportion')}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${
-              view === 'proportion'
-                ? 'bg-primary text-white shadow-sm'
-                : 'bg-bg text-sub'
-            }`}
+            onClick={() => { setView('proportion'); setSelectedMonth(null) }}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${view === 'proportion' ? 'bg-primary text-white shadow-sm' : 'bg-bg text-sub'}`}
           >
             🍩 消费占比
           </button>
@@ -182,183 +135,138 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
-          {view === 'trend' ? (
-            <div>
-              {/* Monthly bar chart */}
-              <div className="flex items-end gap-1.5 h-40 mb-3">
-                {monthlyData.map((m) => {
-                  const height = (m.expense / maxMonthly) * 100
-                  const isSelected = selectedMonth === m.month
-                  const isCurrentMonth = m.month === new Date().getMonth()
-
-                  return (
-                    <button
-                      key={m.month}
-                      onClick={() => setSelectedMonth(isSelected ? null : m.month)}
-                      className="flex-1 flex flex-col items-center justify-end gap-1 group"
-                    >
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(height, 2)}%` }}
-                        transition={{ delay: m.month * 0.05, duration: 0.4 }}
-                        className={`w-full rounded-t-lg transition-all ${
-                          isSelected
-                            ? 'bg-primary shadow-md shadow-primary/30'
-                            : isCurrentMonth
-                            ? 'bg-primary/40'
-                            : m.expense > 0
-                            ? 'bg-expense/40 group-hover:bg-expense/60'
-                            : 'bg-border/30'
-                        }`}
-                      />
-                      <span className={`text-[9px] ${
-                        isSelected ? 'text-primary font-medium' : 'text-sub/60'
-                      }`}>
-                        {MONTHS[m.month].replace('月', '')}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Selected month detail */}
-              <AnimatePresence>
-                {selectedMonth !== null && selectedMonthData && selectedMonthCategories && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-4 bg-bg rounded-2xl space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium text-text">
-                          {MONTHS[selectedMonth]}消费详情
-                        </h3>
-                        <span className="text-sm font-bold text-expense">
-                          ¥{selectedMonthData.expense.toFixed(2)}
+          {view === 'monthly' ? (
+            selectedMonth === null ? (
+              <>
+                <p className="text-xs text-sub mb-3">点击月份查看分类详情</p>
+                <div className="flex items-end gap-1.5 h-40 mb-3">
+                  {monthlyData.map((m) => {
+                    const height = (m.expense / maxMonthly) * 100
+                    const isCurrent = m.month === new Date().getMonth()
+                    return (
+                      <button
+                        key={m.month}
+                        onClick={() => m.expense > 0 && setSelectedMonth(m.month)}
+                        className="flex-1 flex flex-col items-center justify-end gap-1 group"
+                      >
+                        <span className="text-[8px] text-sub/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {m.expense > 0 ? `¥${m.expense.toFixed(0)}` : ''}
                         </span>
-                      </div>
-
-                      {Object.entries(selectedMonthCategories)
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([cat, amount]) => {
-                          const icon = allCategories.find((c) => c.label === cat)?.icon || '📝'
-                          const pct = selectedMonthData.expense > 0 ? (amount / selectedMonthData.expense) * 100 : 0
-                          return (
-                            <div key={cat} className="flex items-center gap-2">
-                              <span className="text-base">{icon}</span>
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between mb-0.5">
-                                  <span className="text-xs text-text">{cat}</span>
-                                  <span className="text-xs text-sub">¥{amount.toFixed(0)} ({pct.toFixed(0)}%)</span>
-                                </div>
-                                <div className="h-1.5 bg-border/30 rounded-full overflow-hidden">
-                                  <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${pct}%` }}
-                                    transition={{ duration: 0.5 }}
-                                    className="h-full bg-primary rounded-full"
-                                  />
-                                </div>
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: `${Math.max(height, m.expense > 0 ? 3 : 0)}%` }}
+                          transition={{ delay: m.month * 0.04, duration: 0.4 }}
+                          className={`w-full rounded-t-lg transition-all ${
+                            isCurrent ? 'bg-primary/60'
+                            : m.expense > 0 ? 'bg-primary/30 group-hover:bg-primary/50 cursor-pointer'
+                            : 'bg-border/20'
+                          }`}
+                        />
+                        <span className={`text-[9px] ${isCurrent ? 'text-primary font-medium' : 'text-sub/60'}`}>
+                          {m.month + 1}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setSelectedMonth(null)} className="text-xs text-primary font-medium">← 返回全年</button>
+                  <span className="text-sm font-bold text-expense">¥{selectedMonthData?.expense.toFixed(0) || '0'}</span>
+                </div>
+                <h3 className="text-sm font-medium text-text text-center">{MONTHS[selectedMonth]}消费详情</h3>
+                {selectedMonthCategories && Object.keys(selectedMonthCategories).length > 0 ? (
+                  <div className="space-y-2">
+                    {Object.entries(selectedMonthCategories)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([cat, amount]) => {
+                        const icon = allCategories.find((c) => c.label === cat)?.icon || '📝'
+                        const pct = selectedMonthData && selectedMonthData.expense > 0 ? (amount / selectedMonthData.expense) * 100 : 0
+                        const color = categoryData.find(c => c.category === cat)?.color || CHART_COLORS[0]
+                        return (
+                          <div key={cat} className="flex items-center gap-3 p-3 bg-bg rounded-xl">
+                            <span className="text-lg">{icon}</span>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs text-text font-medium">{cat}</span>
+                                <span className="text-xs text-sub">¥{amount.toFixed(0)} ({pct.toFixed(1)}%)</span>
+                              </div>
+                              <div className="h-1.5 bg-border/30 rounded-full overflow-hidden">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${pct}%` }}
+                                  transition={{ duration: 0.5 }}
+                                  className="h-full rounded-full"
+                                  style={{ backgroundColor: color }}
+                                />
                               </div>
                             </div>
-                          )
-                        })}
-
-                      {Object.keys(selectedMonthCategories).length === 0 && (
-                        <p className="text-xs text-sub text-center py-2">这个月没有支出记录</p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* Donut chart */}
-              <div className="relative w-48 h-48 mx-auto">
-                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                  {categoryData.reduce<{ elements: JSX.Element[]; offset: number }>(
-                    (acc, cat, i) => {
-                      const circumference = 2 * Math.PI * 40
-                      const strokeLength = (cat.percentage / 100) * circumference
-                      const strokeOffset = acc.offset
-
-                      acc.elements.push(
-                        <motion.circle
-                          key={cat.category}
-                          cx="50"
-                          cy="50"
-                          r="40"
-                          fill="none"
-                          stroke={cat.color}
-                          strokeWidth="12"
-                          strokeDasharray={`${strokeLength} ${circumference - strokeLength}`}
-                          strokeDashoffset={-strokeOffset}
-                          initial={{ pathLength: 0 }}
-                          animate={{ pathLength: strokeLength }}
-                          transition={{ delay: i * 0.1, duration: 0.5 }}
-                          strokeLinecap="round"
-                        />
-                      )
-
-                      acc.offset += strokeLength
-                      return acc
-                    },
-                    { elements: [], offset: 0 }
-                  ).elements}
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl">🏆</span>
-                  <p className="text-xs text-sub mt-1">年度消费</p>
-                  <p className="text-sm font-bold text-text">¥{totalExpense.toFixed(0)}</p>
-                </div>
-              </div>
-
-              {/* Category list */}
-              <div className="space-y-2">
-                {categoryData.map((cat, i) => (
-                  <motion.div
-                    key={cat.category}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-center gap-3 p-3 bg-bg rounded-xl"
-                  >
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${cat.color}20` }}
-                    >
-                      <span className="text-lg">{cat.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-text">{cat.category}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <div className="flex-1 h-1.5 bg-border/30 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${cat.percentage}%` }}
-                            transition={{ delay: i * 0.1 + 0.3, duration: 0.5 }}
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: cat.color }}
-                          />
-                        </div>
-                        <span className="text-[10px] text-sub w-10 text-right">{cat.percentage.toFixed(1)}%</span>
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium text-text">¥{cat.amount.toFixed(0)}</span>
-                  </motion.div>
-                ))}
-
-                {categoryData.length === 0 && (
+                          </div>
+                        )
+                      })}
+                  </div>
+                ) : (
                   <div className="text-center py-8">
-                    <span className="text-4xl block mb-2">📊</span>
-                    <p className="text-sm text-sub">还没有消费记录</p>
-                    <p className="text-xs text-sub/60 mt-1">开始记账后来看年度报告</p>
+                    <span className="text-3xl block mb-2">📭</span>
+                    <p className="text-sm text-sub">这个月没有支出记录</p>
                   </div>
                 )}
               </div>
+            )
+          ) : (
+            <div className="space-y-4">
+              {categoryData.length > 0 ? (
+                <>
+                  <div className="relative w-48 h-48 mx-auto">
+                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                      {categoryData.reduce<{ els: JSX.Element[]; off: number }>((acc, cat) => {
+                        const len = (cat.percentage / 100) * C
+                        const gap = 2
+                        const actual = Math.max(len - gap, 1)
+                        acc.els.push(
+                          <circle key={cat.category} cx="50" cy="50" r={R} fill="none" stroke={cat.color} strokeWidth="10"
+                            strokeDasharray={`${actual} ${C - actual}`} strokeDashoffset={-acc.off} strokeLinecap="round" />
+                        )
+                        acc.off += len
+                        return acc
+                      }, { els: [], off: 0 }).els}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <p className="text-[10px] text-sub">总支出</p>
+                      <p className="text-sm font-bold text-text">¥{totalExpense.toFixed(0)}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {categoryData.map((cat, i) => (
+                      <motion.div key={cat.category} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                        className="flex items-center gap-3 p-3 bg-bg rounded-xl">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${cat.color}20` }}>
+                          <span className="text-lg">{cat.icon}</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-text">{cat.category}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex-1 h-1.5 bg-border/30 rounded-full overflow-hidden">
+                              <motion.div initial={{ width: 0 }} animate={{ width: `${cat.percentage}%` }} transition={{ delay: i * 0.1 + 0.3, duration: 0.5 }}
+                                className="h-full rounded-full" style={{ backgroundColor: cat.color }} />
+                            </div>
+                            <span className="text-[10px] text-sub w-10 text-right">{cat.percentage.toFixed(1)}%</span>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-text">¥{cat.amount.toFixed(0)}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <span className="text-4xl block mb-2">📊</span>
+                  <p className="text-sm text-sub">今年还没有消费记录</p>
+                  <p className="text-xs text-sub/60 mt-1">开始记账后来看报告</p>
+                </div>
+              )}
             </div>
           )}
         </div>

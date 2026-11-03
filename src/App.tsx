@@ -25,7 +25,7 @@ export default function App() {
             onClick={() => setShowYearReport(true)}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-border hover:border-primary transition-colors group"
           >
-            <span className="text-sm">🎮</span>
+            <span className="text-sm">📊</span>
             <span className="text-xs text-sub group-hover:text-primary transition-colors">{new Date().getFullYear()}年</span>
             <span className="text-[10px] text-sub/60">▾</span>
           </button>

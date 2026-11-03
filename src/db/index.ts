@@ -19,6 +19,7 @@ export interface Goal {
   currentAmount: number
   deadline: string
   achievedMilestones?: number[]
+  startBalance: number
   createdAt: number
 }
 
@@ -97,6 +98,7 @@ class QianTuDB extends Dexie {
       boxHistory: '++id, date, openedAt',
     })
     this.version(2).stores({})
+    this.version(3).stores({})
   }
 }
 

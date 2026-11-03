@@ -76,7 +76,7 @@ export default function DataDropdown() {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-border text-xs text-sub hover:border-primary transition-colors"
       >
         <span>📊</span>
-        <span>数据趋势</span>
+        <span>消费趋势</span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}

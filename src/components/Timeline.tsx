@@ -398,7 +398,6 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
         whileHover={{ scale: 1.05, rotate: 5 }}
         onClick={openCategoryPage}
         className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-coral text-white shadow-cute flex items-center justify-center text-2xl z-30"
-        title="记一笔"
       >
         ✏️
       </motion.button>

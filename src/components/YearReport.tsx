@@ -141,24 +141,25 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
                 <p className="text-xs text-sub mb-3">点击月份查看分类详情</p>
                 <div className="flex items-end gap-1.5 h-40 mb-3">
                   {monthlyData.map((m) => {
-                    const height = (m.expense / maxMonthly) * 100
+                    const height = maxMonthly > 0 ? (m.expense / maxMonthly) * 100 : 0
                     const isCurrent = m.month === new Date().getMonth()
+                    const hasExpense = m.expense > 0
                     return (
                       <button
                         key={m.month}
-                        onClick={() => m.expense > 0 && setSelectedMonth(m.month)}
+                        onClick={() => setSelectedMonth(m.month)}
                         className="flex-1 flex flex-col items-center justify-end gap-1 group"
                       >
                         <span className="text-[8px] text-sub/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {m.expense > 0 ? `¥${m.expense.toFixed(0)}` : ''}
+                          {hasExpense ? `¥${m.expense.toFixed(0)}` : ''}
                         </span>
                         <motion.div
                           initial={{ height: 0 }}
-                          animate={{ height: `${Math.max(height, m.expense > 0 ? 3 : 0)}%` }}
+                          animate={{ height: `${Math.max(height, hasExpense ? 4 : 2)}%` }}
                           transition={{ delay: m.month * 0.04, duration: 0.4 }}
                           className={`w-full rounded-t-lg transition-all ${
                             isCurrent ? 'bg-primary/60'
-                            : m.expense > 0 ? 'bg-primary/30 group-hover:bg-primary/50 cursor-pointer'
+                            : hasExpense ? 'bg-primary/30 group-hover:bg-primary/50 cursor-pointer'
                             : 'bg-border/20'
                           }`}
                         />

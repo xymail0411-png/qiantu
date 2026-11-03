@@ -144,19 +144,19 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
                     const heightPercent = maxMonthly > 0 ? (m.expense / maxMonthly) * 100 : 0
                     const isCurrent = m.month === new Date().getMonth()
                     const hasExpense = m.expense > 0
-                    const barHeight = hasExpense ? Math.max(heightPercent, 8) : 2
+                    const barHeightPx = hasExpense ? Math.max((heightPercent / 100) * 160, 12) : 4
                     return (
                       <button
                         key={m.month}
                         onClick={() => setSelectedMonth(m.month)}
-                        className="flex-1 flex flex-col items-center justify-end gap-1 group"
+                        className="flex-1 flex flex-col items-center justify-end gap-1 h-full group"
                       >
                         <span className="text-[9px] text-sub/70 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
                           {hasExpense ? `¥${m.expense.toFixed(0)}` : ''}
                         </span>
                         <motion.div
                           initial={{ height: 0 }}
-                          animate={{ height: `${barHeight}%` }}
+                          animate={{ height: barHeightPx }}
                           transition={{ delay: m.month * 0.05, duration: 0.5, ease: "easeOut" }}
                           className={`w-full rounded-t-md transition-all ${
                             isCurrent ? 'bg-primary'

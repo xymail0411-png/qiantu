@@ -7,6 +7,7 @@ export interface Transaction {
   amount: number
   type: 'expense' | 'income'
   note?: string
+  mood?: string
   goalId?: number
   createdAt: number
 }
@@ -95,6 +96,7 @@ class QianTuDB extends Dexie {
       badges: '++id, name',
       boxHistory: '++id, date, openedAt',
     })
+    this.version(2).stores({})
   }
 }
 

@@ -8,9 +8,12 @@ export default function AmountInput() {
   const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, openAmountInput, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
+  const [mood, setMood] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [hintText, setHintText] = useState('')
   const hintTimeoutRef = useRef<number | null>(null)
+
+  const moods = ['😊', '😐', '😔', '😤', '🤩', '😴', '🥳', '😰']
 
   useEffect(() => {
     return () => {
@@ -67,6 +70,7 @@ export default function AmountInput() {
       amount: num,
       type: selectedCategory.type,
       note: note || undefined,
+      mood: mood || undefined,
       createdAt: Date.now(),
     })
 
@@ -82,6 +86,7 @@ export default function AmountInput() {
         setShowHint(false)
         setAmount('')
         setNote('')
+        setMood('')
         closeAmountInput()
         closeCategoryPage()
         triggerRefresh()
@@ -90,6 +95,7 @@ export default function AmountInput() {
     } else {
       setAmount('')
       setNote('')
+      setMood('')
       closeAmountInput()
       closeCategoryPage()
       triggerRefresh()
@@ -106,12 +112,14 @@ export default function AmountInput() {
       amount: num,
       type: selectedCategory.type,
       note: note || undefined,
+      mood: mood || undefined,
       createdAt: Date.now(),
     })
 
     // 清空输入，保持界面打开
     setAmount('')
     setNote('')
+    setMood('')
     triggerRefresh()
     
     // 显示提示
@@ -150,13 +158,13 @@ export default function AmountInput() {
         >
           <motion.div
             className="absolute inset-0 bg-black/30"
-            onClick={() => { closeAmountInput(); setAmount(''); setNote('') }}
+            onClick={() => { closeAmountInput(); setAmount(''); setNote(''); setMood('') }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           />
           <motion.div
-            className="relative w-full max-w-md bg-white rounded-t-3xl p-6 pb-8"
+            className="relative w-full max-w-md mx-auto bg-white rounded-t-3xl p-6 pb-8 md:rounded-b-3xl md:my-8 md:shadow-2xl md:border md:border-border/30"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -175,7 +183,7 @@ export default function AmountInput() {
                 </span>
               </div>
               <button
-                onClick={() => { closeAmountInput(); setAmount(''); setNote('') }}
+                onClick={() => { closeAmountInput(); setAmount(''); setNote(''); setMood('') }}
                 className="text-sub text-xl leading-none p-1"
               >
                 ✕
@@ -194,8 +202,25 @@ export default function AmountInput() {
               placeholder="添加备注（选填）"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full px-4 py-3 bg-bg rounded-xl border border-border text-sm text-text placeholder-sub mb-4 outline-none focus:border-primary transition-colors"
+              className="w-full px-4 py-3 bg-bg rounded-xl border border-border text-sm text-text placeholder-sub mb-3 outline-none focus:border-primary transition-colors"
             />
+
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xs text-sub shrink-0">心情</span>
+              <div className="flex gap-1.5">
+                {moods.map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMood(mood === m ? '' : m)}
+                    className={`text-lg transition-all ${
+                      mood === m ? 'scale-125 grayscale-0' : 'scale-100 grayscale opacity-40'
+                    } hover:opacity-70`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="grid grid-cols-4 gap-2 mb-4">
               {keys.map((key) => (

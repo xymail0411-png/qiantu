@@ -31,8 +31,8 @@ export default function CategoryPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-bg">
-      <div className="max-w-md mx-auto h-full flex flex-col">
+    <div className="fixed inset-0 z-50 bg-bg md:bg-black/30 md:flex md:items-center md:justify-center" onClick={closeCategoryPage}>
+      <div className="max-w-md mx-auto h-full flex flex-col md:h-[90vh] md:rounded-3xl md:shadow-2xl md:border md:border-border/30 md:overflow-hidden bg-bg" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 pt-6 pb-4">
           <button
             onClick={closeCategoryPage}

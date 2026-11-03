@@ -1,5 +1,6 @@
 import GoalBar from '../components/GoalBar'
 import Timeline from '../components/Timeline'
+import DataDropdown from '../components/DataDropdown'
 
 export default function HomePage() {
   return (
@@ -7,6 +8,7 @@ export default function HomePage() {
       <div className="mb-4">
         <GoalBar />
       </div>
+      <DataDropdown />
       <Timeline />
     </div>
   )

@@ -4,7 +4,7 @@ import { useAppStore } from '../store'
 const tabs = [
   { key: 'home' as const, icon: '📝', label: '记一下' },
   { key: 'convert' as const, icon: '💡', label: '值多少' },
-  { key: 'game' as const, icon: '🎰', label: '盲盒' },
+  { key: 'game' as const, icon: '🎰', label: '开盲盒' },
 ]
 
 export default function TabBar() {
@@ -12,7 +12,7 @@ export default function TabBar() {
   const setActiveTab = useAppStore((s) => s.setActiveTab)
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-border z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-border z-40 md:border-x md:border-border/30 md:shadow-lg md:shadow-primary/5">
       <div className="max-w-md mx-auto flex items-center justify-around h-16">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key

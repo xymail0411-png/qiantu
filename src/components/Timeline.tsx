@@ -137,6 +137,7 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
             <span className="text-base">{getCategoryIcon(t.category)}</span>
             <span className="text-sm font-medium text-text">{t.category}</span>
             <span className="text-xs text-sub">{time}</span>
+            {t.mood && <span className="text-sm">{t.mood}</span>}
           </div>
           {t.note && (
             <p className="text-xs text-sub mt-0.5 truncate">{t.note}</p>
@@ -340,7 +341,7 @@ export default function Timeline() {
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={openCategoryPage}
-        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center text-2xl z-30"
+        className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center text-2xl z-30"
       >
         ✏️
       </motion.button>

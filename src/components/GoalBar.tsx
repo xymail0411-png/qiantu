@@ -41,16 +41,16 @@ export default function GoalBar() {
     if (currentProgress > prevProgress) {
       // 检查50%里程碑
       if (prevProgress < 50 && currentProgress >= 50 && !achieved.includes(50)) {
-        setCelebrationText('🎊 已存到一半啦！继续冲！')
+        setCelebrationText('🎊 一半啦！')
         setShowCelebration(true)
-        setTimeout(() => setShowCelebration(false), 3000)
+        setTimeout(() => setShowCelebration(false), 1500)
         db.goals.update(goal.id!, { achievedMilestones: [...achieved, 50] })
       }
       // 检查100%达成（不插旗，只庆祝）
       else if (prevProgress < 100 && currentProgress >= 100 && !achieved.includes(100)) {
-        setCelebrationText('🎉 目标达成！你太棒了！')
+        setCelebrationText('🎉 达成！')
         setShowCelebration(true)
-        setTimeout(() => setShowCelebration(false), 3000)
+        setTimeout(() => setShowCelebration(false), 1500)
         db.goals.update(goal.id!, { achievedMilestones: [...achieved, 100] })
       }
     }
@@ -264,7 +264,6 @@ export default function GoalBar() {
               className="bg-white rounded-3xl px-10 py-8 shadow-2xl border-2 border-primary/30"
             >
               <p className="text-2xl font-bold text-text text-center">{celebrationText}</p>
-              <p className="text-sm text-sub text-center mt-2">继续加油！</p>
             </motion.div>
           </motion.div>
         )}

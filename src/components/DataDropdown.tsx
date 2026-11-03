@@ -11,8 +11,14 @@ function getFirstDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 1).getDay()
 }
 
-export default function DataDropdown() {
+export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen: boolean) => void }) {
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleToggle = () => {
+    const newState = !isOpen
+    setIsOpen(newState)
+    onOpenChange?.(newState)
+  }
 
   const now = new Date()
   const year = now.getFullYear()
@@ -31,14 +37,14 @@ export default function DataDropdown() {
   )
 
   const [checkInDays, setCheckInDays] = useState<Set<number>>(new Set())
-  const [moodData, setMoodData] = useState<{ day: number; mood: string }[]>([])
+  const [dayMoodMap, setDayMoodMap] = useState<Map<number, string>>(new Map())
   const [dailyExpenses, setDailyExpenses] = useState<{ day: number; amount: number }[]>([])
 
   useEffect(() => {
     if (!transactions) return
 
     const days = new Set<number>()
-    const moods: { day: number; mood: string }[] = []
+    const moodByDay: Record<number, string[]> = {}
     const daily: Record<number, number> = {}
 
     for (const t of transactions) {
@@ -46,7 +52,8 @@ export default function DataDropdown() {
       days.add(day)
 
       if (t.mood) {
-        moods.push({ day, mood: t.mood })
+        if (!moodByDay[day]) moodByDay[day] = []
+        moodByDay[day].push(t.mood)
       }
 
       if (t.type === 'expense') {
@@ -54,8 +61,16 @@ export default function DataDropdown() {
       }
     }
 
+    const modeMap = new Map<number, string>()
+    for (const [dayStr, moods] of Object.entries(moodByDay)) {
+      const freq: Record<string, number> = {}
+      for (const m of moods) freq[m] = (freq[m] || 0) + 1
+      const mode = Object.entries(freq).sort(([, a], [, b]) => b - a)[0][0]
+      modeMap.set(parseInt(dayStr), mode)
+    }
+
     setCheckInDays(days)
-    setMoodData(moods)
+    setDayMoodMap(modeMap)
     setDailyExpenses(
       Object.entries(daily).map(([d, amount]) => ({ day: parseInt(d), amount }))
     )
@@ -72,7 +87,7 @@ export default function DataDropdown() {
   return (
     <div className="mb-4">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-border text-xs text-sub hover:border-primary transition-colors"
       >
         <span>📊</span>
@@ -128,7 +143,7 @@ export default function DataDropdown() {
                     const day = i + 1
                     const isCheckedIn = checkInDays.has(day)
                     const isToday = day === today
-                    const dayMood = moodData.find((m) => m.day === day)
+                    const dayMood = dayMoodMap.get(day)
 
                     return (
                       <div
@@ -143,7 +158,7 @@ export default function DataDropdown() {
                       >
                         {isCheckedIn ? (
                           dayMood ? (
-                            <span className="text-xs">{dayMood.mood}</span>
+                            <span className="text-xs">{dayMood}</span>
                           ) : (
                             <span>✓</span>
                           )
@@ -192,27 +207,6 @@ export default function DataDropdown() {
                   <div className="flex justify-between mt-1">
                     <span className="text-[9px] text-sub/60">1日</span>
                     <span className="text-[9px] text-sub/60">{daysInMonth}日</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Recent moods */}
-              {moodData.length > 0 && (
-                <div>
-                  <p className="text-xs text-sub mb-2">😊 最近心情</p>
-                  <div className="flex gap-2 flex-wrap">
-                    {moodData
-                      .sort((a, b) => b.day - a.day)
-                      .slice(0, 7)
-                      .map((m, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-1 px-2 py-1 bg-bg rounded-full"
-                        >
-                          <span className="text-sm">{m.mood}</span>
-                          <span className="text-[10px] text-sub">{m.day}日</span>
-                        </div>
-                      ))}
                   </div>
                 </div>
               )}

@@ -1,0 +1,23 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+commit: a1b264ef696586d0d58bb149da4241692ec9c02a
+branch: master
+exported_at: "2026-10-31T07:22:00Z"
+modules:
+    root:
+        dir_name: 钱途记账应用工程配置
+        title: 钱途记账应用工程配置
+        scope:
+            - index.html
+            - package.json
+            - package-lock.json
+            - tsconfig.json
+            - vite.config.ts
+            - tailwind.config.js
+            - postcss.config.js
+            - absurd-converter.html
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

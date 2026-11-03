@@ -154,10 +154,14 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
   )
 }
 
-export default function Timeline() {
+export default function Timeline({ collapsedByParent = false }: { collapsedByParent?: boolean }) {
   const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage, refreshKey } = useAppStore()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [transactions, setTransactions] = useState<any[]>([])
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const MAX_VISIBLE_RECORDS = 5
+  const shouldCollapse = collapsedByParent || !isExpanded
 
   useEffect(() => {
     db.transactions
@@ -312,10 +316,10 @@ export default function Timeline() {
       </AnimatePresence>
 
       {/* Timeline records */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div className={`flex-1 overflow-y-auto min-h-0 transition-all duration-200 ${shouldCollapse ? 'max-h-0' : 'max-h-full'}`}>
         {filteredTransactions.length > 0 ? (
           <div>
-            {filteredTransactions.map((t, i) => (
+            {(shouldCollapse ? filteredTransactions.slice(0, MAX_VISIBLE_RECORDS) : filteredTransactions).map((t, i) => (
               <SwipeableRecord
                 key={t.id}
                 t={t}
@@ -323,6 +327,14 @@ export default function Timeline() {
                 onDelete={handleDeleteRecord}
               />
             ))}
+            {filteredTransactions.length > MAX_VISIBLE_RECORDS && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full py-3 text-xs text-primary font-medium bg-bg/50 hover:bg-bg transition-colors"
+              >
+                {isExpanded ? '收起' : `展开更多 (${filteredTransactions.length - MAX_VISIBLE_RECORDS}条)`}
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">

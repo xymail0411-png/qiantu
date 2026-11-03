@@ -1,0 +1,1132 @@
+{
+  "wiki_repo": {
+    "id": "164b460d-198d-29c3-b1ad-e64b94485699",
+    "name": "bill",
+    "progress_status": "completed",
+    "wiki_present_status": "COMPLETED",
+    "recovery_checkpoint": "wiki_generation_completed",
+    "last_commit_id": "a1b264ef696586d0d58bb149da4241692ec9c02a",
+    "last_commit_update": "2026-10-31T07:22:09Z",
+    "gmt_create": "2026-10-31T07:22:09Z",
+    "gmt_modified": "2026-10-31T07:22:09Z",
+    "extend_info": "{\"language\":\"zh\",\"active\":true,\"branch\":\"master\"}"
+  },
+  "wiki_catalogs": [
+    {
+      "id": "185b9a6d-b85b-485f-b29a-85122913f6fe",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "页面组件",
+      "description": "page-components",
+      "prompt": "创建钱途记账应用页面组件的详细文档。深入解释三个核心页面组件的职责和实现：HomePage（首页）负责收支时间线展示、目标进度跟踪和快速记账入口；ConvertPage（换算页）实现消费等价物计算、愿望清单管理和购买天数估算；GamePage（游戏页）提供盲盒抽取、成就收集和徽章墙展示功能。详细说明每个页面的路由配置、状态管理集成、用户交互流程和数据流处理。包含页面间的导航逻辑、生命周期钩子使用和数据持久化策略。提供具体的代码示例展示页面组件的初始化、事件处理和状态更新模式。解释页面组件与Store的交互方式以及与通用组件的集成模式。",
+      "progress_status": "completed",
+      "dependent_files": "src/pages/Home.tsx,src/pages/Convert.tsx,src/pages/Game.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "layer_level": 2,
+      "kk_dependent_files": [
+        "src/pages/Home.tsx",
+        "src/pages/Convert.tsx",
+        "src/pages/Game.tsx"
+      ]
+    },
+    {
+      "id": "1f6a6ab5-de33-404d-b56a-4173a3e274d6",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "数据库Schema设计",
+      "description": "database-schema",
+      "prompt": "为钱途记账应用的Dexie数据库Schema创建详细的设计文档。详细说明QianTuDB类中定义的8个核心表结构：Transaction（收支记录）、Goal（存钱目标）、WishlistItem（愿望清单项）、EquivalentItem（等价物配置）、Prize（盲盒奖品）、Achievement（成就记录）、Badge（徽章）、BoxRecord（开盒历史）的完整字段定义、数据类型约束、主键策略和外键关系。解释每个表的索引设计，包括自增主键、复合索引和查询优化策略。说明表之间的关联关系和数据完整性约束。包含完整的ER图和样本数据示例。解释Dexie版本管理机制和数据迁移策略。提供数据库初始化流程和连接管理最佳实践。",
+      "progress_status": "completed",
+      "dependent_files": "src/db/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "layer_level": 1,
+      "kk_dependent_files": [
+        "src/db/index.ts"
+      ]
+    },
+    {
+      "id": "20319909-807d-4214-919f-db92949cfea3",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "分类配置系统",
+      "description": "categories-config",
+      "prompt": "为钱途记账应用的分类配置系统创建详细文档。详细说明CategoryType枚举（EXPENSE/INCOME）的设计意图和使用场景。深入解释支出分类数组的结构，包括19个支出分类（餐饮、购物、交通、娱乐、学习等）和5个收入分类（工资、兼职、理财等）的业务含义。说明每个分类对象的属性定义：id唯一标识符、name显示名称、icon图标类名、type收支类型、defaultAmount默认金额。详细阐述分类数据的扩展机制，包括如何添加新分类、修改现有分类属性和维护分类一致性。提供具体的代码示例展示分类的使用方式，包括在组件中的引用方法和与数据库模型的对应关系。",
+      "progress_status": "completed",
+      "dependent_files": "src/data/categories.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "layer_level": 2,
+      "kk_dependent_files": [
+        "src/data/categories.ts"
+      ]
+    },
+    {
+      "id": "3c0369d1-092f-4d6d-8afa-0e29a1d01647",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "项目概述",
+      "description": "project-overview",
+      "prompt": "为钱途记账应用创建全面的项目概述内容。解释应用的核心价值主张——帮助用户通过日常记账、消费换算和盲盒游戏来培养理财习惯。详细说明应用的三大核心功能：收支记录与时间线展示、消费等价物换算与愿望清单管理、基于支出的概率抽奖游戏。介绍技术栈选择（React + TypeScript + Vite + Zustand + Dexie）及其优势。说明项目的整体架构思路和设计理念，包括移动端优先的响应式设计、本地数据存储策略等。提供项目安装、启动和基本使用说明。使用与代码库一致的术语，为新用户提供清晰的入门指导。",
+      "progress_status": "completed",
+      "dependent_files": "package.json,index.html,src/main.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "kk_dependent_files": [
+        "package.json",
+        "index.html",
+        "src/main.tsx"
+      ]
+    },
+    {
+      "id": "4a15f9e0-e6f1-4d40-bb5a-a224b636abff",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "整体架构概览",
+      "description": "overall-architecture",
+      "prompt": "为钱途记账应用创建整体架构概览文档。描述应用的MVVM分层架构模式，包括Model（数据层：Dexie ORM + IndexedDB）、View（视图层：React组件）、ViewModel（状态层：Zustand Store）的职责划分。说明技术栈选择理由：React用于UI框架、Zustand用于轻量级状态管理、Dexie用于浏览器本地存储、Tailwind CSS用于样式系统。解释单页应用（SPA）的启动流程，从main.tsx入口到App根组件的路由分发。包含系统边界图，展示前端应用与浏览器API、IndexedDB的关系。说明移动端优先的设计理念和响应式布局策略。",
+      "progress_status": "completed",
+      "dependent_files": "src/App.tsx,src/main.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "layer_level": 1,
+      "kk_dependent_files": [
+        "src/App.tsx",
+        "src/main.tsx"
+      ]
+    },
+    {
+      "id": "9e719854-16e5-4ad3-941c-19d2ddefb86e",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "CategoryGrid 分类网格组件",
+      "description": "category-grid",
+      "prompt": "为CategoryGrid分类网格组件创建详细文档。说明该组件用于展示收支分类的网格布局，支持点击选择分类并触发回调事件。详细描述组件的props接口：categories数组、selectedId选中项、onSelect选择回调、gridSize网格尺寸等属性。解释组件内部的分隔符渲染逻辑、选中状态样式切换和响应式网格布局实现。包含完整的TypeScript类型定义和使用示例代码。说明与categories.ts数据文件的依赖关系，以及如何扩展新的分类项目。提供自定义样式覆盖的方法和最佳实践。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/CategoryGrid.tsx,src/data/categories.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "kk_dependent_files": [
+        "src/components/CategoryGrid.tsx",
+        "src/data/categories.ts"
+      ]
+    },
+    {
+      "id": "e489606e-8355-43d2-bba3-9cc91e09d0f8",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "记账功能",
+      "description": "accounting-feature",
+      "prompt": "为钱途记账应用的记账功能创建详细文档。深入解释收支记录管理、分类选择系统、时间线展示逻辑和目标进度跟踪的实现细节。说明用户如何通过首页进行快速记账，包括金额输入验证、分类网格选择、日期导航等交互流程。详细分析Timeline组件如何渲染收支时间线，GoalBar组件如何计算和展示目标完成进度。解释与Zustand状态管理的集成方式，以及与Dexie数据库的读写操作。包含具体的代码示例，展示如何添加新的收支分类、自定义时间线样式、扩展目标管理功能等实际开发场景。",
+      "progress_status": "completed",
+      "dependent_files": "src/pages/Home.tsx,src/components/Timeline.tsx,src/components/GoalBar.tsx,src/data/categories.ts,src/store/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "layer_level": 1,
+      "kk_dependent_files": [
+        "src/pages/Home.tsx",
+        "src/components/Timeline.tsx",
+        "src/components/GoalBar.tsx",
+        "src/data/categories.ts",
+        "src/store/index.ts"
+      ]
+    },
+    {
+      "id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "架构设计",
+      "description": "architecture-design",
+      "prompt": "为钱途记账应用创建架构设计文档。描述应用的整体架构模式，包括MVVM分层架构、组件化设计、单向数据流等核心设计原则。详细说明各层次职责：视图层（React组件）、状态层（Zustand Store）、数据层（Dexie ORM）。解释组件层次结构和依赖关系，从App根组件到页面组件再到通用组件的调用链。说明数据流向：用户操作→组件事件→Zustand状态更新→UI重新渲染，以及表单输入→数据验证→Dexie写入→LiveQuery订阅→实时更新的数据路径。包含架构图和数据流图，帮助开发者理解系统边界和组件交互模式。",
+      "progress_status": "completed",
+      "dependent_files": "src/App.tsx,src/main.tsx,src/store/index.ts,src/db/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 1,
+      "kk_dependent_files": [
+        "src/App.tsx",
+        "src/main.tsx",
+        "src/store/index.ts",
+        "src/db/index.ts"
+      ]
+    },
+    {
+      "id": "75f7d510-7ef6-4d6c-8106-bae2adc486e7",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "CategoryPage 分类选择页",
+      "description": "category-page",
+      "prompt": "为CategoryPage分类选择页面组件创建详细文档。说明该组件作为独立的分类选择界面，提供完整的分类浏览和选择功能。详细描述组件的props接口：onConfirm确认回调、initialSelection初始选择、showHeader是否显示标题等属性。解释页面导航逻辑、分类筛选功能和批量操作能力。包含路由集成方式和与其他页面的交互模式。提供完整的页面生命周期管理和状态同步机制。说明动画过渡效果、错误处理和用户反馈机制。包含实际使用场景的代码示例和配置选项。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/CategoryPage.tsx,src/data/categories.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/components/CategoryPage.tsx",
+        "src/data/categories.ts"
+      ]
+    },
+    {
+      "id": "89bf9553-3c68-40b1-885e-a17b1da4ed2a",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "换算功能",
+      "description": "conversion-feature",
+      "prompt": "为钱途记账应用的换算功能创建详细文档。深入解释等价物计算算法的核心逻辑，包括如何将消费金额转换为现实物品的数量概念。详细说明愿望清单管理系统，包括添加愿望、删除愿望、标记已购买等功能实现。分析购买天数估算逻辑，帮助用户理解需要多少天的储蓄才能达到消费目标。解释equivalents.ts中的数据配置结构，如何扩展新的等价物类型。说明与全局状态的集成方式，以及换算结果在UI中的动态更新机制。包含具体的代码示例，展示如何添加新的等价物配置、自定义换算公式、扩展愿望清单字段等开发实践。",
+      "progress_status": "completed",
+      "dependent_files": "src/pages/Convert.tsx,src/data/equivalents.ts,src/store/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "layer_level": 1,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/pages/Convert.tsx",
+        "src/data/equivalents.ts",
+        "src/store/index.ts"
+      ]
+    },
+    {
+      "id": "b3ddf029-fa57-4ab1-95de-93a2e8766a64",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "等价物配置系统",
+      "description": "equivalents-config",
+      "prompt": "为钱途记账应用的等价物配置系统创建全面文档。详细说明EquivalentItem接口设计，包括id、name、price、category、image、description等属性的作用和数据类型。深入解释预设等价物物品体系，包括奶茶（15元）、电影票（40元）、技术书（60元）、咖啡机（2000元）等物品的定价逻辑和分类组织。说明价格体系的业务规则，包括如何根据消费金额计算可购买数量。详细介绍自定义等价物的添加方法，包括JSON格式规范、必填字段验证和最佳实践建议。提供完整的代码示例展示等价物的使用场景，包括在换算功能中的计算逻辑和愿望清单的集成方式。说明与数据库WishlistItem模型的数据映射关系。",
+      "progress_status": "completed",
+      "dependent_files": "src/data/equivalents.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "layer_level": 2,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/data/equivalents.ts"
+      ]
+    },
+    {
+      "id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "静态配置数据",
+      "description": "static-data-config",
+      "prompt": "为钱途记账应用的静态配置数据创建全面的设计文档。详细说明categories.ts中的分类体系设计，包括支出分类（餐饮、购物、交通等19个分类）和收入分类（工资、兼职、理财等5个分类）的组织结构和扩展机制。解释equivalents.ts中的等价物配置系统，包括预设物品（奶茶、电影票、技术书等）的价格体系和自定义物品的添加方式。详细说明prizes.ts中的奖品池设计，包括稀有度分级（common/rare/legendary）、概率分配机制（60%/30%/10%）和奖品数量配置。说明TypeScript类型定义与数据库模型的对应关系。包含数据验证规则和扩展指南。",
+      "progress_status": "completed",
+      "dependent_files": "src/data/categories.ts,src/data/equivalents.ts,src/data/prizes.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "layer_level": 1,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/data/categories.ts",
+        "src/data/equivalents.ts",
+        "src/data/prizes.ts"
+      ]
+    },
+    {
+      "id": "f55746b6-81c1-4bd9-ad8c-977d0da48c1b",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "通用组件",
+      "description": "common-components",
+      "prompt": "创建钱途记账应用通用组件的详细文档。深入说明六个核心通用组件的设计模式和实现细节：Timeline组件负责收支记录的可视化展示和时间轴交互；CategoryGrid组件实现分类网格布局和选择交互；AmountInput组件提供金额输入验证和格式化功能；GoalBar组件显示存钱目标的进度条和完成状态；TabBar组件实现底部导航栏和页面切换；CategoryPage组件作为分类选择的独立页面。详细解释每个组件的Props接口设计、事件回调机制、状态管理和样式定制选项。包含组件的可复用性设计、错误处理策略和性能优化技巧。提供具体的使用示例展示组件在不同场景下的集成方式和最佳实践。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/Timeline.tsx,src/components/CategoryGrid.tsx,src/components/AmountInput.tsx,src/components/GoalBar.tsx,src/components/TabBar.tsx,src/components/CategoryPage.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "layer_level": 2,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/components/Timeline.tsx",
+        "src/components/CategoryGrid.tsx",
+        "src/components/AmountInput.tsx",
+        "src/components/GoalBar.tsx",
+        "src/components/TabBar.tsx",
+        "src/components/CategoryPage.tsx"
+      ]
+    },
+    {
+      "id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "组件层次结构",
+      "description": "component-hierarchy",
+      "prompt": "创建钱途记账应用的组件层次结构文档。详细说明组件树的分层组织：App根组件 → Pages页面组件（Home/Convert/Game）→ Components通用组件（Timeline/CategoryGrid/AmountInput等）。解释每个层级组件的职责和复用性原则。说明组件间的依赖关系和数据传递方式，包括props传递、事件回调、全局状态共享等模式。提供组件调用链图和依赖关系图。解释页面组件与通用组件的解耦设计，以及组件的可测试性和可维护性考虑。包含组件生命周期管理和性能优化最佳实践。",
+      "progress_status": "completed",
+      "dependent_files": "src/App.tsx,src/pages/Home.tsx,src/pages/Convert.tsx,src/pages/Game.tsx,src/components/Timeline.tsx,src/components/CategoryGrid.tsx,src/components/AmountInput.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "layer_level": 1,
+      "order": 1,
+      "kk_dependent_files": [
+        "src/App.tsx",
+        "src/pages/Home.tsx",
+        "src/pages/Convert.tsx",
+        "src/pages/Game.tsx",
+        "src/components/Timeline.tsx",
+        "src/components/CategoryGrid.tsx",
+        "src/components/AmountInput.tsx"
+      ]
+    },
+    {
+      "id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "核心功能模块",
+      "description": "core-features",
+      "prompt": "为钱途记账应用的核心功能模块创建综合文档。详细介绍三大主要功能：记账功能（收支记录、分类选择、时间线展示、目标进度跟踪）、换算功能（等价物计算、愿望清单管理、购买天数估算）、游戏功能（盲盒抽取、成就收集、徽章墙展示）。说明每个功能的业务逻辑、用户操作流程和技术实现要点。解释功能间的关联关系和数据共享机制。包含具体的代码示例和使用场景，帮助开发者理解各功能的实现细节和扩展方式。",
+      "progress_status": "completed",
+      "dependent_files": "src/pages/Home.tsx,src/pages/Convert.tsx,src/pages/Game.tsx,src/components/Timeline.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 2,
+      "kk_dependent_files": [
+        "src/pages/Home.tsx",
+        "src/pages/Convert.tsx",
+        "src/pages/Game.tsx",
+        "src/components/Timeline.tsx"
+      ]
+    },
+    {
+      "id": "42e0ea1b-0681-4802-8933-46ffe5fab282",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "奖品池配置系统",
+      "description": "prizes-config",
+      "prompt": "为钱途记账应用的奖品池配置系统创建详细文档。详细说明Prize接口设计，包括id、name、rarity稀有度、probability概率、imageUrl图片路径、unlockCondition解锁条件等属性的定义和业务含义。深入解释稀有度分级体系：common（普通，白色）、rare（稀有，蓝色）、legendary（传说，金色）三种等级的视觉设计和获取难度。详细说明概率分配机制，包括60%/30%/10%的概率分布规则和随机抽取算法的实现原理。解释奖品数量配置策略，包括初始奖品池大小、重复奖品的处理机制和库存管理逻辑。说明解锁条件的设置方式，包括累计开盒次数、成就达成等触发条件。提供完整的代码示例展示奖品的使用场景，包括盲盒抽取逻辑、成就系统和徽章墙的实现方式。",
+      "progress_status": "completed",
+      "dependent_files": "src/data/prizes.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "layer_level": 2,
+      "order": 2,
+      "kk_dependent_files": [
+        "src/data/prizes.ts"
+      ]
+    },
+    {
+      "id": "76bebc38-9ea5-48be-b74e-dfb2a6e4f97c",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "AmountInput 金额输入弹窗",
+      "description": "amount-input",
+      "prompt": "为AmountInput金额输入弹窗组件创建详细文档。说明该组件提供数字金额输入界面，包含键盘布局和数值验证功能。详细描述组件的props接口：visible可见性控制、value当前值、onChange变化回调、placeholder占位符、maxValue最大值限制等属性。解释输入验证规则、格式化显示逻辑和错误提示机制。包含键盘事件处理、数值范围检查和边界条件处理。提供移动端适配的触摸交互优化。说明弹窗动画效果、遮罩层行为和关闭机制。包含完整的集成示例和自定义样式覆盖方法。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/AmountInput.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "order": 2,
+      "kk_dependent_files": [
+        "src/components/AmountInput.tsx"
+      ]
+    },
+    {
+      "id": "9b69913f-6884-478d-88c0-9c9c32ba7768",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "游戏功能",
+      "description": "game-feature",
+      "prompt": "为钱途记账应用的游戏功能创建详细文档。深入解释盲盒概率抽取机制的实现原理，包括随机数生成、概率权重计算、奖品分配算法等核心技术。详细说明成就收集系统的业务规则，包括成就解锁条件、徽章墙展示逻辑、成就统计功能等。分析prizes.ts中奖品数据的配置结构，如何设计不同稀有度的奖品和对应的获取概率。解释开盒动画效果的实现技术，包括Framer Motion动画库的使用、动画状态管理等。说明与支出记录的关联逻辑，如何根据用户的消费行为解锁开盒机会。包含具体的代码示例，展示如何添加新奖品、调整概率分布、自定义成就规则等开发指南。",
+      "progress_status": "completed",
+      "dependent_files": "src/pages/Game.tsx,src/data/prizes.ts,src/store/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "layer_level": 1,
+      "order": 2,
+      "kk_dependent_files": [
+        "src/pages/Game.tsx",
+        "src/data/prizes.ts",
+        "src/store/index.ts"
+      ]
+    },
+    {
+      "id": "9cd705c7-f66e-4702-b9ad-6286d04b3f10",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "数据流模式",
+      "description": "data-flow-patterns",
+      "prompt": "创建钱途记账应用的数据流模式文档。详细描述单向数据流实现：用户操作触发组件事件 → Zustand状态更新 → UI自动重新渲染。说明表单数据流向：金额输入验证 → 业务逻辑处理 → Dexie数据库写入 → LiveQuery订阅 → 实时更新显示。解释状态管理模式：Zustand store作为单一事实来源，避免状态分散。说明异步数据处理：数据库操作的Promise链、错误处理和重试机制。包含数据流时序图和状态变化图。提供常见数据流场景的实现示例，如添加收支记录、更新目标进度、切换日期等。",
+      "progress_status": "completed",
+      "dependent_files": "src/store/index.ts,src/db/index.ts,src/pages/Home.tsx,src/components/Timeline.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "layer_level": 1,
+      "order": 2,
+      "kk_dependent_files": [
+        "src/store/index.ts",
+        "src/db/index.ts",
+        "src/pages/Home.tsx",
+        "src/components/Timeline.tsx"
+      ]
+    },
+    {
+      "id": "22f22a3c-2102-4944-8203-4619a91a9e99",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "状态管理设计",
+      "description": "state-management",
+      "prompt": "创建钱途记账应用的状态管理设计文档。详细说明Zustand store的结构设计，包括标签切换状态、日期导航状态、弹窗控制状态、记账数据状态等核心状态字段。解释状态持久化策略，如何将关键状态同步到IndexedDB。说明状态更新的最佳实践，包括原子性更新、批量更新、状态派生计算等。提供状态调试和监控的方法。解释与React组件的集成模式，包括useSelector钩子的使用、性能优化技巧（如selector memoization）。包含状态流程图和状态变更追踪示例。",
+      "progress_status": "completed",
+      "dependent_files": "src/store/index.ts,src/data/categories.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "layer_level": 1,
+      "order": 3,
+      "kk_dependent_files": [
+        "src/store/index.ts",
+        "src/data/categories.ts"
+      ]
+    },
+    {
+      "id": "c7611ab3-6856-4e74-b63e-01dfc8c7cf4e",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "Timeline 时间线组件",
+      "description": "timeline",
+      "prompt": "为Timeline时间线组件创建详细文档。说明该组件用于展示按日期分组的收支记录时间线，支持滚动加载和实时更新。详细描述组件的props接口：transactions交易数据列表、dateRange日期范围、onTransactionClick点击回调、isLoading加载状态等属性。解释日期分组算法、空状态处理和加载骨架屏实现。包含数据库查询集成、分页加载策略和数据刷新机制。说明收入支出项目的视觉区分、金额格式化显示和分类图标展示。提供性能优化技巧、虚拟滚动支持和内存管理。包含完整的集成示例和自定义主题配置。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/Timeline.tsx,src/db/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "order": 3,
+      "kk_dependent_files": [
+        "src/components/Timeline.tsx",
+        "src/db/index.ts"
+      ]
+    },
+    {
+      "id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "UI组件参考",
+      "description": "ui-components",
+      "prompt": "为钱途记账应用的UI组件创建详细的参考文档。逐一介绍所有可复用组件：CategoryGrid（分类网格组件）、CategoryPage（分类选择页）、AmountInput（金额输入弹窗）、Timeline（时间线组件）、GoalBar（目标进度条）、TabBar（底部导航栏）。对每个组件说明其视觉外观、行为特征和用户交互模式。详细描述组件的props属性、事件处理、插槽使用和自定义选项。包含完整的使用示例代码片段和实时演示。提供响应式设计和无障碍访问的指导原则。说明组件状态、动画效果和过渡效果。包括样式自定义选项和主题支持。解决跨浏览器兼容性和性能优化问题。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/CategoryGrid.tsx,src/components/CategoryPage.tsx,src/components/AmountInput.tsx,src/components/Timeline.tsx,src/components/GoalBar.tsx,src/components/TabBar.tsx",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 3,
+      "kk_dependent_files": [
+        "src/components/CategoryGrid.tsx",
+        "src/components/CategoryPage.tsx",
+        "src/components/AmountInput.tsx",
+        "src/components/Timeline.tsx",
+        "src/components/GoalBar.tsx",
+        "src/components/TabBar.tsx"
+      ]
+    },
+    {
+      "id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "数据层设计",
+      "description": "data-layer",
+      "prompt": "为钱途记账应用的数据层创建全面的设计文档。详细说明Dexie数据库Schema设计，包括8个核心表结构：Transaction（收支记录）、Goal（存钱目标）、WishlistItem（愿望清单项）、Prize（盲盒奖品）、Achievement（成就记录）等实体的字段定义、数据类型、主外键关系和索引策略。解释数据模型接口定义和业务规则验证。说明静态配置数据的组织结构：categories.ts中的分类体系、equivalents.ts中的等价物配置、prizes.ts中的奖品池设计。包含数据库关系图和样本数据。解释数据访问模式、缓存策略和性能考虑。说明数据生命周期、保留策略和归档规则。包含数据迁移路径和版本管理方案。",
+      "progress_status": "completed",
+      "dependent_files": "src/db/index.ts,src/data/categories.ts,src/data/equivalents.ts,src/data/prizes.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 4,
+      "kk_dependent_files": [
+        "src/db/index.ts",
+        "src/data/categories.ts",
+        "src/data/equivalents.ts",
+        "src/data/prizes.ts"
+      ]
+    },
+    {
+      "id": "7cd04fd8-f9a2-492e-b64c-76cd9108d8ac",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "数据层设计",
+      "description": "data-layer-design",
+      "prompt": "创建钱途记账应用的数据层设计文档。详细说明Dexie ORM的Schema设计，包括Transaction（收支记录）、Goal（存钱目标）、WishlistItem（愿望清单）、Prize（盲盒奖品）、Achievement（成就记录）等核心表结构。解释字段定义、数据类型、约束条件和索引策略。说明静态配置数据的管理：categories分类数据、equivalents换算物品、prizes奖品池的组织方式。解释数据访问模式：CRUD操作封装、查询优化、事务处理。提供数据迁移和版本管理的策略。包含数据库关系图和ER图，帮助开发者理解数据模型和业务关联。",
+      "progress_status": "completed",
+      "dependent_files": "src/db/index.ts,src/data/categories.ts,src/data/equivalents.ts,src/data/prizes.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "layer_level": 1,
+      "order": 4,
+      "kk_dependent_files": [
+        "src/db/index.ts",
+        "src/data/categories.ts",
+        "src/data/equivalents.ts",
+        "src/data/prizes.ts"
+      ]
+    },
+    {
+      "id": "f5a10ae5-1653-40fd-a616-287d6e690d1d",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "GoalBar 目标进度条",
+      "description": "goal-bar",
+      "prompt": "为GoalBar目标进度条组件创建详细文档。说明该组件用于可视化展示存钱目标的完成进度，包含动态进度动画和统计信息。详细描述组件的props接口：currentAmount当前金额、targetAmount目标金额、goalTitle目标标题、color主题色等属性。解释进度计算算法、百分比显示逻辑和动画过渡效果。包含目标达成状态的判断和处理机制。说明与数据库的实时数据同步和状态更新策略。提供进度条样式自定义、颜色主题配置和响应式适配方案。包含完整的业务集成示例和扩展使用方法。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/GoalBar.tsx,src/db/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "order": 4,
+      "kk_dependent_files": [
+        "src/components/GoalBar.tsx",
+        "src/db/index.ts"
+      ]
+    },
+    {
+      "id": "07c749a0-065a-4b06-b0a8-b44fd6f825d5",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "状态管理",
+      "description": "state-management",
+      "prompt": "为钱途记账应用的状态管理创建详细文档。深入解释Zustand Store的设计模式和实现细节。说明全局状态结构设计，包括标签切换状态、日期导航状态、弹窗控制状态等业务相关的全局状态。详细介绍异步状态处理方法、状态持久化策略和数据同步机制。解释状态更新的最佳实践，避免不必要的重渲染和优化技巧。包含具体的代码示例，展示如何在组件中使用Store API进行状态读写。说明状态调试工具和开发时监控方法。提供状态管理的性能优化建议和常见问题解决方案。",
+      "progress_status": "completed",
+      "dependent_files": "src/store/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 5,
+      "kk_dependent_files": [
+        "src/store/index.ts"
+      ]
+    },
+    {
+      "id": "df422b63-243d-466d-a3e8-51679f13c979",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "TabBar 底部导航栏",
+      "description": "tab-bar",
+      "prompt": "为TabBar底部导航栏组件创建详细文档。说明该组件提供应用的主要页面导航功能，支持标签切换和状态同步。详细描述组件的props接口：tabs标签数组、activeIndex当前激活索引、onTabChange切换回调等属性。解释标签配置结构、图标渲染逻辑和激活状态管理。包含与Zustand全局状态的集成方式，确保页面状态与导航状态同步。说明移动端手势支持、滑动切换优化和导航动画效果。提供标签数量自适应、溢出处理和可访问性支持。包含完整的配置示例和自定义样式定制指南。",
+      "progress_status": "completed",
+      "dependent_files": "src/components/TabBar.tsx,src/store/index.ts",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "parent_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "layer_level": 1,
+      "order": 5,
+      "kk_dependent_files": [
+        "src/components/TabBar.tsx",
+        "src/store/index.ts"
+      ]
+    },
+    {
+      "id": "55573fe5-01c8-4e07-b73c-eceeb4fb64a6",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "样式与主题",
+      "description": "styling-theming",
+      "prompt": "为钱途记账应用的样式系统创建综合文档。详细说明Tailwind CSS的配置和定制，包括品牌色系统设计、响应式布局策略和移动端优先的设计原则。解释CSS模块化组织和样式命名约定。说明PostCSS处理流程和自动化构建配置。提供主题定制指南，包括颜色变量、字体规范、间距系统和组件样式模板。包含响应式断点设置和不同屏幕尺寸的适配方案。说明动画效果的实现方式和Framer Motion的集成。提供样式性能优化建议和最佳实践。包含常见样式问题的解决方案和调试技巧。",
+      "progress_status": "completed",
+      "dependent_files": "src/index.css,tailwind.config.js,postcss.config.js",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 6,
+      "kk_dependent_files": [
+        "src/index.css",
+        "tailwind.config.js",
+        "postcss.config.js"
+      ]
+    },
+    {
+      "id": "245e6d48-e11a-48ce-ba14-d2f3ed7404dc",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "开发指南",
+      "description": "development-guide",
+      "prompt": "为钱途记账应用创建全面的开发指南。详细说明开发环境搭建步骤，包括Node.js版本要求、依赖安装和项目启动流程。介绍TypeScript配置选项和编译优化设置。解释Vite构建工具的配置文件和各选项的作用。提供代码规范和约定，包括文件命名、组件结构、函数命名等最佳实践。说明组件开发的标准流程和代码审查检查点。包含调试技巧和常用工具推荐。提供性能优化建议，包括代码分割、懒加载和资源优化。说明Git工作流和版本管理规范。包含常见问题排查和故障排除指南。",
+      "progress_status": "completed",
+      "dependent_files": "tsconfig.json,vite.config.ts,package.json",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 7,
+      "kk_dependent_files": [
+        "tsconfig.json",
+        "vite.config.ts",
+        "package.json"
+      ]
+    },
+    {
+      "id": "18a7241d-968c-40ef-ac67-a6acc422a1f5",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "name": "部署与运维",
+      "description": "deployment-operations",
+      "prompt": "为钱途记账应用创建部署与运维文档。详细说明生产环境的构建配置和优化选项，包括代码压缩、资源优化和缓存策略。解释PWA配置的各个选项和服务工作者的工作原理。提供多种部署方案的指导，包括静态文件托管、CDN部署和容器化部署。说明环境变量配置和安全设置。包含性能监控和错误追踪的配置方法。提供数据备份和恢复策略，特别是IndexedDB数据的迁移和管理。说明日志记录和故障诊断的方法。包含运维监控指标和告警配置建议。提供常见部署问题的解决方案和回滚策略。",
+      "progress_status": "completed",
+      "dependent_files": "vite.config.ts,package.json",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z",
+      "order": 8,
+      "kk_dependent_files": [
+        "vite.config.ts",
+        "package.json"
+      ]
+    }
+  ],
+  "wiki_items": [
+    {
+      "id": "185b9a6d-b85b-485f-b29a-85122913f6fe",
+      "catalog_id": "185b9a6d-b85b-485f-b29a-85122913f6fe",
+      "title": "页面组件",
+      "description": "page-components",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "1f6a6ab5-de33-404d-b56a-4173a3e274d6",
+      "catalog_id": "1f6a6ab5-de33-404d-b56a-4173a3e274d6",
+      "title": "数据库Schema设计",
+      "description": "database-schema",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "20319909-807d-4214-919f-db92949cfea3",
+      "catalog_id": "20319909-807d-4214-919f-db92949cfea3",
+      "title": "分类配置系统",
+      "description": "categories-config",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "3c0369d1-092f-4d6d-8afa-0e29a1d01647",
+      "catalog_id": "3c0369d1-092f-4d6d-8afa-0e29a1d01647",
+      "title": "项目概述",
+      "description": "project-overview",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "4a15f9e0-e6f1-4d40-bb5a-a224b636abff",
+      "catalog_id": "4a15f9e0-e6f1-4d40-bb5a-a224b636abff",
+      "title": "整体架构概览",
+      "description": "overall-architecture",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "9e719854-16e5-4ad3-941c-19d2ddefb86e",
+      "catalog_id": "9e719854-16e5-4ad3-941c-19d2ddefb86e",
+      "title": "CategoryGrid 分类网格组件",
+      "description": "category-grid",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "e489606e-8355-43d2-bba3-9cc91e09d0f8",
+      "catalog_id": "e489606e-8355-43d2-bba3-9cc91e09d0f8",
+      "title": "记账功能",
+      "description": "accounting-feature",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "catalog_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "title": "架构设计",
+      "description": "architecture-design",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "75f7d510-7ef6-4d6c-8106-bae2adc486e7",
+      "catalog_id": "75f7d510-7ef6-4d6c-8106-bae2adc486e7",
+      "title": "CategoryPage 分类选择页",
+      "description": "category-page",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "89bf9553-3c68-40b1-885e-a17b1da4ed2a",
+      "catalog_id": "89bf9553-3c68-40b1-885e-a17b1da4ed2a",
+      "title": "换算功能",
+      "description": "conversion-feature",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "b3ddf029-fa57-4ab1-95de-93a2e8766a64",
+      "catalog_id": "b3ddf029-fa57-4ab1-95de-93a2e8766a64",
+      "title": "等价物配置系统",
+      "description": "equivalents-config",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "catalog_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "title": "静态配置数据",
+      "description": "static-data-config",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "f55746b6-81c1-4bd9-ad8c-977d0da48c1b",
+      "catalog_id": "f55746b6-81c1-4bd9-ad8c-977d0da48c1b",
+      "title": "通用组件",
+      "description": "common-components",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "catalog_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "title": "组件层次结构",
+      "description": "component-hierarchy",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "catalog_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "title": "核心功能模块",
+      "description": "core-features",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "42e0ea1b-0681-4802-8933-46ffe5fab282",
+      "catalog_id": "42e0ea1b-0681-4802-8933-46ffe5fab282",
+      "title": "奖品池配置系统",
+      "description": "prizes-config",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "76bebc38-9ea5-48be-b74e-dfb2a6e4f97c",
+      "catalog_id": "76bebc38-9ea5-48be-b74e-dfb2a6e4f97c",
+      "title": "AmountInput 金额输入弹窗",
+      "description": "amount-input",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "9b69913f-6884-478d-88c0-9c9c32ba7768",
+      "catalog_id": "9b69913f-6884-478d-88c0-9c9c32ba7768",
+      "title": "游戏功能",
+      "description": "game-feature",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "9cd705c7-f66e-4702-b9ad-6286d04b3f10",
+      "catalog_id": "9cd705c7-f66e-4702-b9ad-6286d04b3f10",
+      "title": "数据流模式",
+      "description": "data-flow-patterns",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "22f22a3c-2102-4944-8203-4619a91a9e99",
+      "catalog_id": "22f22a3c-2102-4944-8203-4619a91a9e99",
+      "title": "状态管理设计",
+      "description": "state-management",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "c7611ab3-6856-4e74-b63e-01dfc8c7cf4e",
+      "catalog_id": "c7611ab3-6856-4e74-b63e-01dfc8c7cf4e",
+      "title": "Timeline 时间线组件",
+      "description": "timeline",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "catalog_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "title": "UI组件参考",
+      "description": "ui-components",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "catalog_id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "title": "数据层设计",
+      "description": "data-layer",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "7cd04fd8-f9a2-492e-b64c-76cd9108d8ac",
+      "catalog_id": "7cd04fd8-f9a2-492e-b64c-76cd9108d8ac",
+      "title": "数据层设计",
+      "description": "data-layer-design",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "f5a10ae5-1653-40fd-a616-287d6e690d1d",
+      "catalog_id": "f5a10ae5-1653-40fd-a616-287d6e690d1d",
+      "title": "GoalBar 目标进度条",
+      "description": "goal-bar",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "07c749a0-065a-4b06-b0a8-b44fd6f825d5",
+      "catalog_id": "07c749a0-065a-4b06-b0a8-b44fd6f825d5",
+      "title": "状态管理",
+      "description": "state-management",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "df422b63-243d-466d-a3e8-51679f13c979",
+      "catalog_id": "df422b63-243d-466d-a3e8-51679f13c979",
+      "title": "TabBar 底部导航栏",
+      "description": "tab-bar",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "55573fe5-01c8-4e07-b73c-eceeb4fb64a6",
+      "catalog_id": "55573fe5-01c8-4e07-b73c-eceeb4fb64a6",
+      "title": "样式与主题",
+      "description": "styling-theming",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "245e6d48-e11a-48ce-ba14-d2f3ed7404dc",
+      "catalog_id": "245e6d48-e11a-48ce-ba14-d2f3ed7404dc",
+      "title": "开发指南",
+      "description": "development-guide",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": "18a7241d-968c-40ef-ac67-a6acc422a1f5",
+      "catalog_id": "18a7241d-968c-40ef-ac67-a6acc422a1f5",
+      "title": "部署与运维",
+      "description": "deployment-operations",
+      "extend": "{}",
+      "progress_status": "completed",
+      "repo_id": "164b460d-198d-29c3-b1ad-e64b94485699",
+      "reference_count": 0,
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    }
+  ],
+  "knowledge_relations": [
+    {
+      "id": 1,
+      "source_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "target_id": "185b9a6d-b85b-485f-b29a-85122913f6fe",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 2,
+      "source_id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "target_id": "1f6a6ab5-de33-404d-b56a-4173a3e274d6",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 3,
+      "source_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "target_id": "20319909-807d-4214-919f-db92949cfea3",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 4,
+      "source_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "target_id": "4a15f9e0-e6f1-4d40-bb5a-a224b636abff",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 5,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "9e719854-16e5-4ad3-941c-19d2ddefb86e",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 6,
+      "source_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "target_id": "e489606e-8355-43d2-bba3-9cc91e09d0f8",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 7,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "75f7d510-7ef6-4d6c-8106-bae2adc486e7",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 8,
+      "source_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "target_id": "89bf9553-3c68-40b1-885e-a17b1da4ed2a",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 9,
+      "source_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "target_id": "b3ddf029-fa57-4ab1-95de-93a2e8766a64",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 10,
+      "source_id": "2af98181-72e9-452c-9f40-877da94ea513",
+      "target_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 11,
+      "source_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "target_id": "f55746b6-81c1-4bd9-ad8c-977d0da48c1b",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 12,
+      "source_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "target_id": "f6951756-fbc7-411d-8066-841e6f26589f",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 13,
+      "source_id": "b71d063a-12b1-45b8-ab17-89bb29b1e444",
+      "target_id": "42e0ea1b-0681-4802-8933-46ffe5fab282",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 14,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "76bebc38-9ea5-48be-b74e-dfb2a6e4f97c",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 15,
+      "source_id": "303ca7c3-7edb-47d1-96e3-95b72b782660",
+      "target_id": "9b69913f-6884-478d-88c0-9c9c32ba7768",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 16,
+      "source_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "target_id": "9cd705c7-f66e-4702-b9ad-6286d04b3f10",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 17,
+      "source_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "target_id": "22f22a3c-2102-4944-8203-4619a91a9e99",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 18,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "c7611ab3-6856-4e74-b63e-01dfc8c7cf4e",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 19,
+      "source_id": "2c87b04b-28c5-4524-8127-fff1947d5039",
+      "target_id": "7cd04fd8-f9a2-492e-b64c-76cd9108d8ac",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 20,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "f5a10ae5-1653-40fd-a616-287d6e690d1d",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    },
+    {
+      "id": 21,
+      "source_id": "ca9b9a3c-32ab-462b-9d01-c781daa2add4",
+      "target_id": "df422b63-243d-466d-a3e8-51679f13c979",
+      "source_type": "WIKI_ITEM",
+      "target_type": "WIKI_ITEM",
+      "relationship_type": "PARENT_CHILD",
+      "gmt_create": "2026-10-31T07:22:09Z",
+      "gmt_modified": "2026-10-31T07:22:09Z"
+    }
+  ]
+}

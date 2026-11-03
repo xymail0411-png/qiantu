@@ -1,0 +1,49 @@
+schema_version: 1
+module_path: root
+title: 钱途记账应用工程配置
+scope:
+    - index.html
+    - package.json
+    - package-lock.json
+    - tsconfig.json
+    - vite.config.ts
+    - tailwind.config.js
+    - postcss.config.js
+    - absurd-converter.html
+source_files: []
+depends_on: []
+related_to: []
+kk_module_id: bc5c409c-12db-4f7e-a2a6-7f7ee8371cc9
+kk_cards:
+    architecture_design:
+        id: f3215080-50f6-4f2a-88c0-2e87a4c6114e
+        title: 钱途记账应用工程配置
+    coding_conventions:
+        id: 9a8370cf-4f29-4e1f-a402-3715d8b654ff
+        title: 钱途记账应用工程配置
+    overview:
+        id: c8034697-818b-4bc2-b4c5-aec0ee3aaab7
+        title: 钱途记账应用工程配置
+    tech_stack:
+        id: 8adf155d-435b-44a4-b37c-5a4c2f78fb58
+        title: 钱途记账应用工程配置
+    unique_setup_and_commands:
+        id: e04fb4b0-f007-4085-8dcd-c759ffec0d36
+        title: 钱途记账应用工程配置
+    build_system:
+        id: 19bec05a-1a54-4432-b9e9-f4ef993ee695
+        title: Vite + TypeScript 前端构建系统
+    configuration_system:
+        id: dca17a8b-fb0e-4672-a25e-f18e0cfd69a6
+        title: Vite + TailwindCSS + TypeScript 构建与工程配置系统
+    dependency_management:
+        id: 74918946-d16c-4db2-ba8c-d086e6e0a3c9
+        title: 基于 npm + package-lock.json 的前端依赖管理
+    frontend_style:
+        id: ca50ca79-10e3-4614-9446-96af7bdf57ec
+        title: TailwindCSS 主题与样式体系
+kk_repo_cards:
+    - build_system
+    - configuration_system
+    - dependency_management
+    - frontend_style

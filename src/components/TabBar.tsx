@@ -13,7 +13,7 @@ export default function TabBar() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-border z-40 md:border-x md:border-border/30 md:shadow-lg md:shadow-primary/5">
-      <div className="max-w-md mx-auto flex items-center justify-around h-16">
+      <div className="max-w-md mx-auto md:max-w-4xl flex items-center justify-around h-16">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key
           return (

@@ -12,10 +12,10 @@ export const defaultEquivalents: Omit<EquivalentItem, 'id'>[] = [
 ]
 
 export const experienceEquivalents: Omit<EquivalentItem, 'id'>[] = [
-  { name: '电影票', price: 50, icon: '🎬', isCustom: false },
-  { name: 'KTV 小时', price: 40, icon: '🎤', isCustom: false },
-  { name: '保龄球', price: 60, icon: '🎳', isCustom: false },
-  { name: '网吧小时', price: 8, icon: '🖥️', isCustom: false },
-  { name: '密室逃脱', price: 120, icon: '🔐', isCustom: false },
-  { name: '剧本杀', price: 150, icon: '🎭', isCustom: false },
+  { name: '奶茶', price: 15, icon: '🧋', isCustom: false },
+  { name: '咖啡', price: 25, icon: '☕', isCustom: false },
+  { name: '快餐', price: 20, icon: '🍔', isCustom: false },
+  { name: '书籍', price: 45, icon: '📚', isCustom: false },
+  { name: '电影票', price: 40, icon: '🎬', isCustom: false },
+  { name: 'T恤', price: 80, icon: '👕', isCustom: false },
 ]

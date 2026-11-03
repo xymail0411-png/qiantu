@@ -269,15 +269,13 @@ export default function ConvertPage() {
                     </div>
                     {amount > 0 ? (
                       <div className="text-right shrink-0">
-                        <p className="text-[10px] text-sub">≈</p>
                         <p className="text-base font-bold text-coral">
-                          {count >= 1 ? Math.floor(count) : count.toFixed(1)}<span className="text-xs font-medium">个</span>
+                          ≈{count >= 1 ? Math.floor(count) : count.toFixed(1)}<span className="text-xs font-medium">个</span>
                         </p>
                       </div>
                     ) : (
                       <div className="text-right shrink-0">
-                        <p className="text-[10px] text-sub/60">记账后</p>
-                        <p className="text-[10px] text-sub/60">查看换算</p>
+                        <p className="text-xs text-sub/60">记账后查看换算</p>
                       </div>
                     )}
                   </div>

@@ -17,12 +17,14 @@ export default function MilestoneToast({ milestone, onDone }: MilestoneToastProp
           onAnimationComplete={() => {
             setTimeout(onDone, 2500)
           }}
-          className="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 bg-white rounded-2xl px-5 py-3 shadow-cute border-2 border-dashed border-coral/30 flex items-center gap-3 max-w-xs"
+          className="fixed bottom-28 left-0 right-0 z-50 flex justify-center"
         >
-          <span className="text-2xl">{milestone.icon}</span>
-          <div>
-            <p className="text-sm font-bold text-text">🎉 达成里程碑！</p>
-            <p className="text-xs text-sub">{milestone.name} — {milestone.description}</p>
+          <div className="bg-white rounded-2xl px-5 py-3 shadow-cute border-2 border-dashed border-coral/30 flex items-center gap-3 max-w-xs mx-4">
+            <span className="text-2xl">{milestone.icon}</span>
+            <div>
+              <p className="text-sm font-bold text-text">🎉 达成里程碑！</p>
+              <p className="text-xs text-sub">{milestone.name} — {milestone.description}</p>
+            </div>
           </div>
         </motion.div>
       )}

@@ -503,9 +503,11 @@ export default function GamePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 bg-coral text-white px-6 py-3 rounded-full shadow-cute text-sm font-bold whitespace-nowrap"
+            className="fixed bottom-28 left-0 right-0 z-50 flex justify-center"
           >
-            🎉 解锁新徽章：{newBadge}！
+            <div className="bg-coral text-white px-6 py-3 rounded-full shadow-cute text-sm font-bold whitespace-nowrap">
+              🎉 解锁新徽章：{newBadge}！
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

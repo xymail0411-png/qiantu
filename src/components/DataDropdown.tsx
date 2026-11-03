@@ -102,14 +102,14 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
     <div className="relative">
       <button
         onClick={handleToggle}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-border text-xs text-sub hover:border-primary transition-colors group"
+        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-border hover:border-primary transition-colors group shadow-sm"
       >
-        <span className="text-sm">📊</span>
-        <span className="text-xs text-sub group-hover:text-primary transition-colors">消费趋势</span>
+        <span className="text-base">📊</span>
+        <span className="text-sm text-sub group-hover:text-primary transition-colors">消费趋势</span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-[10px] text-sub/60"
+          className="text-xs text-sub/60"
         >
           ▾
         </motion.span>

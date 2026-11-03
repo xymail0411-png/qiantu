@@ -17,13 +17,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg md:bg-gradient-to-br md:from-bg md:via-blue-50/30 md:to-bg">
-      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-3xl lg:max-w-4xl md:px-8">
+      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-5xl lg:max-w-6xl xl:max-w-7xl md:px-8 lg:px-12">
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-text">钱途</h1>
             <p className="text-xs text-sub mt-1">让每一笔消费都有意义</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <DataDropdown onOpenChange={setIsDataDropdownOpen} />
             <button
               onClick={() => setShowYearReport(true)}

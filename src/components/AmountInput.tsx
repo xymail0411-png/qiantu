@@ -161,7 +161,7 @@ export default function AmountInput() {
             exit={{ opacity: 0 }}
           />
           <motion.div
-            className="relative w-full max-w-3xl lg:max-w-4xl mx-auto bg-white rounded-t-3xl p-6 pb-8 md:rounded-b-3xl md:my-8 md:shadow-2xl md:border md:border-border/30"
+            className="relative w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto bg-white rounded-t-3xl p-6 pb-8 md:rounded-b-3xl md:my-8 md:shadow-2xl md:border md:border-border/30"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}

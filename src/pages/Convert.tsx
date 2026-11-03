@@ -252,7 +252,7 @@ export default function ConvertPage() {
                   >
                     ✕
                   </button>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pr-8">
                     <span className="text-3xl shrink-0">{item.icon}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-text truncate">{item.name}</p>
@@ -268,13 +268,13 @@ export default function ConvertPage() {
                       </div>
                     </div>
                     {amount > 0 ? (
-                      <div className="text-right shrink-0">
+                      <div className="shrink-0">
                         <p className="text-base font-bold text-coral">
                           ≈{count >= 1 ? Math.floor(count) : count.toFixed(1)}<span className="text-xs font-medium">个</span>
                         </p>
                       </div>
                     ) : (
-                      <div className="text-right shrink-0">
+                      <div className="shrink-0">
                         <p className="text-xs text-sub/60">记账后查看换算</p>
                       </div>
                     )}

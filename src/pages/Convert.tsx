@@ -244,41 +244,43 @@ export default function ConvertPage() {
                 <motion.div
                   key={item.id}
                   layout
-                  className="relative p-4 bg-cream-dark rounded-2xl flex items-center gap-3 border-2 border-dashed border-border"
+                  className="relative p-4 bg-cream-dark rounded-2xl border-2 border-dashed border-border"
                 >
                   <button
                     onClick={() => handleDeleteWish(item.id!)}
-                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-coral-light/30 text-expense hover:bg-expense hover:text-white text-xs flex items-center justify-center transition-colors border border-expense/20"
+                    className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-coral-light/40 text-expense hover:bg-expense hover:text-white text-xs flex items-center justify-center transition-colors border border-expense/20"
                   >
                     ✕
                   </button>
-                  <span className="text-3xl">{item.icon}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-text">{item.name}</p>
-                      {item.rating && (
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: item.rating }).map((_, i) => (
-                            <span key={i} className="text-xs">⭐</span>
-                          ))}
-                        </div>
-                      )}
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl shrink-0">{item.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-text truncate">{item.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-sub">¥{item.price}</p>
+                        {item.rating && item.rating > 0 && (
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: item.rating }).map((_, i) => (
+                              <span key={i} className="text-[10px]">⭐</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-sub">¥{item.price}</p>
+                    {amount > 0 ? (
+                      <div className="text-right shrink-0">
+                        <p className="text-[10px] text-sub">≈</p>
+                        <p className="text-base font-bold text-coral">
+                          {count >= 1 ? Math.floor(count) : count.toFixed(1)}<span className="text-xs font-medium">个</span>
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-right shrink-0">
+                        <p className="text-[10px] text-sub/60">记账后</p>
+                        <p className="text-[10px] text-sub/60">查看换算</p>
+                      </div>
+                    )}
                   </div>
-                  {amount > 0 ? (
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-coral">≈</p>
-                      <p className="text-sm text-coral font-bold">
-                        {count >= 1 ? Math.floor(count) : count.toFixed(1)}个
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-right">
-                      <p className="text-xs text-sub">记一笔</p>
-                      <p className="text-xs text-sub">再看</p>
-                    </div>
-                  )}
                 </motion.div>
               )
             })}

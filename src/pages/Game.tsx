@@ -500,10 +500,10 @@ export default function GamePage() {
       <AnimatePresence>
         {newBadge && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-coral text-white px-6 py-3 rounded-full shadow-cute text-sm font-bold"
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 bg-coral text-white px-6 py-3 rounded-full shadow-cute text-sm font-bold whitespace-nowrap"
           >
             🎉 解锁新徽章：{newBadge}！
           </motion.div>

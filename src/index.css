@@ -2,16 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 18px; /* 放大基础字号，默认16px → 18px (+12.5%) */
+}
+
 body {
   margin: 0;
   background-color: #FFF8F0;
   color: #5D4E37;
   font-family: 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
+  font-size: 1rem; /* 18px */
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* 全局放大常用字号层级 */
+@layer base {
+  .text-xs   { font-size: 0.8rem !important; }   /* 14.4px (原12px) */
+  .text-sm   { font-size: 0.95rem !important; }  /* 17.1px (原14px) */
+  .text-base { font-size: 1.1rem !important; }   /* 19.8px (原16px) */
+  .text-lg   { font-size: 1.25rem !important; }  /* 22.5px (原18px) */
+  .text-xl   { font-size: 1.5rem !important; }   /* 27px (原20px) */
+  .text-2xl  { font-size: 1.75rem !important; }  /* 31.5px (原24px) */
+  .text-3xl  { font-size: 2.1rem !important; }   /* 37.8px (原30px) */
+  .text-4xl  { font-size: 2.5rem !important; }   /* 45px (原36px) */
 }
 
 @layer utilities {

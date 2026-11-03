@@ -7,8 +7,8 @@ import { allCategories } from '../data/categories'
 const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
 
 const CHART_COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-  '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+  '#FF9B9B', '#B8A9FF', '#7FD8A8', '#FFD93D', '#A8D8EA',
+  '#FF7EB3', '#D4C9FF', '#A8E6C3', '#FFB5B5', '#85C1E9',
   '#F8C471', '#82E0AA'
 ]
 
@@ -90,29 +90,29 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col"
+        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col border-2 border-dashed border-border shadow-cute"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative p-5 pb-4 bg-gradient-to-br from-primary/10 via-purple-50/50 to-pink-50/50">
-          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm">✕</button>
+        <div className="relative p-5 pb-4 bg-gradient-to-br from-coral-light/20 via-lavender-light/20 to-cream-dark">
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm hover:text-coral transition-colors">✕</button>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">📊</span>
             <h2 className="text-lg font-bold text-text">{year}年度消费报告</h2>
           </div>
-          <p className="text-xs text-sub">看看你的钱都花哪了</p>
+          <p className="text-xs text-sub">看看你的钱都花哪了 🌸</p>
           <div className="flex gap-2 mt-4">
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-xl backdrop-blur">
+            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-coral/10">
               <p className="text-[10px] text-sub">总支出</p>
               <p className="text-sm font-bold text-expense">¥{totalExpense.toFixed(0)}</p>
             </div>
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-xl backdrop-blur">
+            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-mint/10">
               <p className="text-[10px] text-sub">总收入</p>
               <p className="text-sm font-bold text-income">¥{totalIncome.toFixed(0)}</p>
             </div>
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-xl backdrop-blur">
+            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-lavender/10">
               <p className="text-[10px] text-sub">结余</p>
-              <p className="text-sm font-bold text-primary">¥{(totalIncome - totalExpense).toFixed(0)}</p>
+              <p className="text-sm font-bold text-coral">¥{(totalIncome - totalExpense).toFixed(0)}</p>
             </div>
           </div>
         </div>
@@ -121,13 +121,13 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
         <div className="flex px-5 pt-3 gap-2">
           <button
             onClick={() => { setView('monthly'); setSelectedMonth(null) }}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${view === 'monthly' ? 'bg-primary text-white shadow-sm' : 'bg-bg text-sub'}`}
+            className={`flex-1 py-2 rounded-2xl text-xs font-bold transition-all ${view === 'monthly' ? 'bg-coral text-white shadow-warm' : 'bg-cream-dark text-sub'}`}
           >
             📈 每月支出
           </button>
           <button
             onClick={() => { setView('proportion'); setSelectedMonth(null) }}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${view === 'proportion' ? 'bg-primary text-white shadow-sm' : 'bg-bg text-sub'}`}
+            className={`flex-1 py-2 rounded-2xl text-xs font-bold transition-all ${view === 'proportion' ? 'bg-coral text-white shadow-warm' : 'bg-cream-dark text-sub'}`}
           >
             🍩 消费占比
           </button>
@@ -158,13 +158,13 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
                           initial={{ height: 0 }}
                           animate={{ height: barHeightPx }}
                           transition={{ delay: m.month * 0.05, duration: 0.5, ease: "easeOut" }}
-                          className={`w-full rounded-t-md transition-all ${
-                            isCurrent ? 'bg-primary'
-                            : hasExpense ? 'bg-primary/40 group-hover:bg-primary/60 cursor-pointer'
+                          className={`w-full rounded-t-lg transition-all ${
+                            isCurrent ? 'bg-coral'
+                            : hasExpense ? 'bg-coral-light/50 group-hover:bg-coral/70 cursor-pointer'
                             : 'bg-border/30'
                           }`}
                         />
-                        <span className={`text-[10px] ${isCurrent ? 'text-primary font-bold' : 'text-sub/70'}`}>
+                        <span className={`text-[10px] ${isCurrent ? 'text-coral font-bold' : 'text-sub/70'}`}>
                           {m.month + 1}
                         </span>
                       </button>
@@ -175,7 +175,7 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => setSelectedMonth(null)} className="text-xs text-primary font-medium">← 返回全年</button>
+                  <button onClick={() => setSelectedMonth(null)} className="text-xs text-coral font-bold">← 返回全年</button>
                   <span className="text-sm font-bold text-expense">¥{selectedMonthData?.expense.toFixed(0) || '0'}</span>
                 </div>
                 <h3 className="text-sm font-medium text-text text-center">{MONTHS[selectedMonth]}消费详情</h3>
@@ -188,7 +188,7 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
                         const pct = selectedMonthData && selectedMonthData.expense > 0 ? (amount / selectedMonthData.expense) * 100 : 0
                         const color = categoryData.find(c => c.category === cat)?.color || CHART_COLORS[0]
                         return (
-                          <div key={cat} className="flex items-center gap-3 p-3 bg-bg rounded-xl">
+                          <div key={cat} className="flex items-center gap-3 p-3 bg-cream-dark rounded-2xl border border-border/50">
                             <span className="text-lg">{icon}</span>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
@@ -243,8 +243,8 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
                   <div className="space-y-2">
                     {categoryData.map((cat, i) => (
                       <motion.div key={cat.category} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-                        className="flex items-center gap-3 p-3 bg-bg rounded-xl">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${cat.color}20` }}>
+                        className="flex items-center gap-3 p-3 bg-cream-dark rounded-2xl border border-border/50">
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${cat.color}20` }}>
                           <span className="text-lg">{cat.icon}</span>
                         </div>
                         <div className="flex-1">

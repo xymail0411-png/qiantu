@@ -130,18 +130,19 @@ export default function GoalBar() {
   if (!goal) {
     return (
       <>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
+        <div className="bg-white rounded-2xl p-4 shadow-soft border-2 border-dashed border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-sub">还没有设定目标</p>
-              <p className="text-xs text-sub/60 mt-0.5">点击设定一个存钱目标吧</p>
+              <p className="text-sm text-sub">☁️ 还没有设定目标</p>
+              <p className="text-xs text-sub/60 mt-0.5">点击设定一个存钱目标吧 ✨</p>
             </div>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={openForm}
-              className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium"
+              className="px-4 py-2 rounded-full bg-coral text-white text-sm font-bold shadow-warm"
             >
-              设定目标
-            </button>
+              设定目标 🎯
+            </motion.button>
           </div>
         </div>
 
@@ -176,26 +177,27 @@ export default function GoalBar() {
 
   return (
     <>
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-border">
+      <div className="bg-white rounded-2xl p-4 shadow-soft border-2 border-dashed border-border">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-base">🎯</span>
-            <span className="text-sm font-medium text-text">{goal.title}</span>
+            <span className="text-sm font-bold text-text">{goal.title}</span>
             {daysLeft !== null && (
-              <span className="text-xs text-sub/60">· {daysLeft}天</span>
+              <span className="text-xs text-sub/60 bg-cream-dark px-2 py-0.5 rounded-full">⏰ {daysLeft}天</span>
             )}
           </div>
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={openForm}
-            className="text-xs text-primary font-medium"
+            className="text-xs text-coral font-bold"
           >
-            编辑
-          </button>
+            编辑 ✏️
+          </motion.button>
         </div>
 
-        <div className="relative w-full h-3 bg-bg rounded-full overflow-visible mb-2">
+        <div className="relative w-full h-4 bg-cream-dark rounded-full overflow-visible mb-2 border border-border">
           <motion.div
-            className={`h-full rounded-full transition-all duration-500 ${isNegative ? 'bg-expense' : 'bg-primary'}`}
+            className={`h-full rounded-full transition-all duration-500 ${isNegative ? 'bg-expense' : 'bg-gradient-to-r from-coral to-coral-dark'}`}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}

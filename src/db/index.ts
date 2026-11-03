@@ -75,6 +75,22 @@ export interface BoxRecord {
   openedAt: number
 }
 
+export interface MilestoneRecord {
+  id?: number
+  key: string
+  name: string
+  icon: string
+  description: string
+  unlockedAt: number
+}
+
+export interface CategoryUsageRecord {
+  id?: number
+  category: string
+  count: number
+  lastUsedAt: number
+}
+
 class QianTuDB extends Dexie {
   transactions!: Table<Transaction>
   goals!: Table<Goal>
@@ -84,6 +100,8 @@ class QianTuDB extends Dexie {
   achievements!: Table<Achievement>
   badges!: Table<Badge>
   boxHistory!: Table<BoxRecord>
+  milestones!: Table<MilestoneRecord>
+  categoryUsage!: Table<CategoryUsageRecord>
 
   constructor() {
     super('QianTu')
@@ -99,6 +117,10 @@ class QianTuDB extends Dexie {
     })
     this.version(2).stores({})
     this.version(3).stores({})
+    this.version(4).stores({
+      milestones: '++id, key, unlockedAt',
+      categoryUsage: '++id, category, lastUsedAt',
+    })
   }
 }
 

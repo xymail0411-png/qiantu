@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { defaultEquivalents } from '../data/equivalents'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ConvertPage() {
@@ -37,7 +37,7 @@ export default function ConvertPage() {
 
   const amount = todayExpense || 0
 
-  const getTopEquivalents = () => {
+  const topEquivalents = useMemo(() => {
     if (amount <= 0) return []
     const items = equivalents || []
     return items
@@ -49,7 +49,7 @@ export default function ConvertPage() {
         return bScore - aScore || Math.abs(1 - a.count) - Math.abs(1 - b.count)
       })
       .slice(0, 3)
-  }
+  }, [amount, equivalents])
 
   const handleAddWish = async () => {
     if (!wishName || !wishPrice) return
@@ -85,51 +85,61 @@ export default function ConvertPage() {
   return (
     <div className="pb-4 space-y-4">
       {/* Today's expense summary */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
-        <h2 className="text-xs font-medium text-sub mb-1">💡 今天花了</h2>
+      <div className="bg-white rounded-2xl p-5 shadow-soft border-2 border-dashed border-border">
+        <h2 className="text-xs font-bold text-sub mb-1">💡 今天花了</h2>
         <p className="text-3xl font-light text-text">
-          ¥ <span className="font-medium">{amount.toFixed(2)}</span>
+          ¥ <span className="font-bold text-coral">{amount.toFixed(2)}</span>
         </p>
       </div>
 
       {/* Equivalents display */}
-      {amount > 0 && getTopEquivalents().length > 0 ? (
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
+      {amount > 0 && topEquivalents.length > 0 ? (
+        <div className="bg-white rounded-2xl p-5 shadow-soft border-2 border-dashed border-border">
           <div className="grid grid-cols-3 gap-3">
-            {getTopEquivalents().map((eq) => (
-              <div
-                key={eq.id}
-                className="flex flex-col items-center p-3 bg-bg rounded-xl"
-              >
-                <span className="text-2xl mb-1">{eq.icon}</span>
-                <span className="text-xs text-sub mb-0.5">≈</span>
-                <span className="text-lg font-medium text-primary">
-                  {formatCount(eq.count)}
-                </span>
-                <span className="text-xs text-sub mt-0.5">{eq.name}</span>
-              </div>
-            ))}
+            {topEquivalents.map((eq, idx) => {
+              const bgColors = ['bg-coral-light/20', 'bg-lavender-light/30', 'bg-mint-light/30']
+              return (
+                <div
+                  key={eq.id}
+                  className={`flex flex-col items-center p-3 ${bgColors[idx % 3]} rounded-2xl`}
+                >
+                  <motion.span
+                    className="text-2xl mb-1"
+                    animate={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    {eq.icon}
+                  </motion.span>
+                  <span className="text-xs text-sub mb-0.5">≈</span>
+                  <span className="text-lg font-bold text-coral">
+                    {formatCount(eq.count)}
+                  </span>
+                  <span className="text-xs text-sub mt-0.5">{eq.name}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-border text-center">
+        <div className="bg-white rounded-2xl p-8 shadow-soft border-2 border-dashed border-border text-center">
           <span className="text-4xl block mb-3">📝</span>
-          <p className="text-sm text-sub">记一笔支出后来看换算</p>
+          <p className="text-sm text-sub">记一笔支出后来看换算 ✨</p>
         </div>
       )}
 
       {/* Wishlist */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-border">
+      <div className="bg-white rounded-2xl p-5 shadow-soft border-2 border-dashed border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-medium text-text">🛍️ 愿望清单</h2>
-          <button
+          <h2 className="text-sm font-bold text-text">🛍️ 愿望清单</h2>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setShowAddWish(!showAddWish)}
-            className="text-xs text-primary font-medium"
+            className="text-xs text-coral font-bold bg-coral-light/20 px-3 py-1 rounded-full"
           >
             {showAddWish ? '取消' : '+ 添加'}
-          </button>
+          </motion.button>
         </div>
-        <p className="text-xs text-sub/60 mb-3 -mt-2">今天花的钱能换多少愿望？</p>
+        <p className="text-xs text-sub/60 mb-3 -mt-2">今天花的钱能换多少愿望？☁️</p>
 
         <AnimatePresence>
           {showAddWish && (
@@ -139,11 +149,11 @@ export default function ConvertPage() {
               exit={{ height: 0, opacity: 0 }}
               className="mb-4 overflow-hidden"
             >
-              <div className="p-3 bg-bg rounded-xl space-y-2">
+              <div className="p-3 bg-cream rounded-2xl space-y-2 border border-border">
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowIconPicker(!showIconPicker)}
-                    className="w-14 h-11 flex items-center justify-center bg-white rounded-lg border border-border text-2xl hover:border-primary transition-colors"
+                    className="w-14 h-11 flex items-center justify-center bg-white rounded-2xl border-2 border-dashed border-border text-2xl hover:border-coral transition-colors"
                   >
                     {wishIcon}
                   </button>
@@ -152,7 +162,7 @@ export default function ConvertPage() {
                     placeholder="名称"
                     value={wishName}
                     onChange={(e) => setWishName(e.target.value)}
-                    className="flex-1 px-3 py-2.5 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
+                    className="flex-1 px-3 py-2.5 bg-white rounded-2xl border-2 border-dashed border-border text-sm outline-none focus:border-coral transition-colors"
                   />
                 </div>
                 
@@ -164,7 +174,7 @@ export default function ConvertPage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="grid grid-cols-8 gap-2 p-2 bg-white rounded-lg border border-border">
+                      <div className="grid grid-cols-8 gap-2 p-2 bg-white rounded-2xl border-2 border-dashed border-border">
                         {commonIcons.map((icon) => (
                           <button
                             key={icon}
@@ -172,8 +182,8 @@ export default function ConvertPage() {
                               setWishIcon(icon)
                               setShowIconPicker(false)
                             }}
-                            className={`w-8 h-8 rounded text-xl hover:bg-bg transition-colors ${
-                              wishIcon === icon ? 'bg-primary/10 ring-2 ring-primary' : ''
+                            className={`w-8 h-8 rounded-full text-xl hover:bg-cream transition-colors ${
+                              wishIcon === icon ? 'bg-coral-light/30 ring-2 ring-coral' : ''
                             }`}
                           >
                             {icon}
@@ -192,12 +202,12 @@ export default function ConvertPage() {
                     onChange={(e) => setWishPrice(e.target.value)}
                     min="0.01"
                     step="0.01"
-                    className="flex-1 px-3 py-2.5 bg-white rounded-lg border border-border text-sm outline-none focus:border-primary"
+                    className="flex-1 px-3 py-2.5 bg-white rounded-2xl border-2 border-dashed border-border text-sm outline-none focus:border-coral transition-colors"
                   />
                   <button
                     onClick={handleAddWish}
                     disabled={!wishName || !wishPrice || parseFloat(wishPrice) <= 0}
-                    className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2.5 bg-coral text-white rounded-full text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-warm"
                   >
                     添加
                   </button>
@@ -232,7 +242,7 @@ export default function ConvertPage() {
                 <motion.div
                   key={item.id}
                   layout
-                  className="relative p-4 bg-bg rounded-xl flex items-center gap-3"
+                  className="relative p-4 bg-cream rounded-2xl flex items-center gap-3 border border-border"
                 >
                   <button
                     onClick={() => handleDeleteWish(item.id!)}
@@ -256,8 +266,8 @@ export default function ConvertPage() {
                   </div>
                   {amount > 0 ? (
                     <div className="text-right">
-                      <p className="text-lg font-medium text-primary">≈</p>
-                      <p className="text-sm text-primary font-medium">
+                      <p className="text-lg font-bold text-coral">≈</p>
+                      <p className="text-sm text-coral font-bold">
                         {count >= 1 ? Math.floor(count) : count.toFixed(1)}个
                       </p>
                     </div>

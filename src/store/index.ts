@@ -1,6 +1,16 @@
 import { create } from 'zustand'
 import type { Category } from '../data/categories'
 
+export interface EditingTransaction {
+  id: number
+  date: string
+  category: string
+  amount: number
+  type: 'expense' | 'income'
+  note?: string
+  mood?: string
+}
+
 interface AppState {
   activeTab: 'home' | 'convert' | 'game'
   setActiveTab: (tab: 'home' | 'convert' | 'game') => void
@@ -13,8 +23,10 @@ interface AppState {
 
   showAmountInput: boolean
   selectedCategory: Category | null
+  editingTransaction: EditingTransaction | null
   openAmountInput: (category: Category) => void
   closeAmountInput: () => void
+  openEditTransaction: (tx: EditingTransaction, category: Category) => void
 
   showCategoryPage: boolean
   openCategoryPage: () => void
@@ -44,8 +56,10 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   showAmountInput: false,
   selectedCategory: null,
-  openAmountInput: (category) => set({ showAmountInput: true, selectedCategory: category }),
-  closeAmountInput: () => set({ showAmountInput: false, selectedCategory: null }),
+  editingTransaction: null,
+  openAmountInput: (category) => set({ showAmountInput: true, selectedCategory: category, editingTransaction: null }),
+  closeAmountInput: () => set({ showAmountInput: false, selectedCategory: null, editingTransaction: null }),
+  openEditTransaction: (tx, category) => set({ showAmountInput: true, selectedCategory: category, editingTransaction: tx }),
 
   showCategoryPage: false,
   openCategoryPage: () => set({ showCategoryPage: true }),

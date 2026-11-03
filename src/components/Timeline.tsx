@@ -2,11 +2,15 @@ import { db } from '../db'
 import { allCategories } from '../data/categories'
 import { useAppStore } from '../store'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, memo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 
 function getCategoryIcon(label: string): string {
   return allCategories.find((c) => c.label === label)?.icon || '📝'
+}
+
+function getCategoryObj(label: string) {
+  return allCategories.find((c) => c.label === label) || allCategories[0]
 }
 
 function formatDateLabel(dateStr: string): string {
@@ -34,11 +38,12 @@ function formatShortDate(dateStr: string): string {
   return `${month}/${day}`
 }
 
-function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id: number) => void }) {
+const SwipeableRecord = memo(function SwipeableRecord({ t, i, onDelete, onEdit }: { t: any; i: number; onDelete: (id: number) => void; onEdit: (t: any) => void }) {
   const [offset, setOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const startX = useRef(0)
   const currentX = useRef(0)
+  const SWIPE_MAX = -140
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX
@@ -50,14 +55,14 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
     currentX.current = e.touches[0].clientX
     const diff = currentX.current - startX.current
     if (diff < 0) {
-      setOffset(Math.max(diff, -80))
+      setOffset(Math.max(diff, SWIPE_MAX))
     }
   }
 
   const handleTouchEnd = () => {
     setIsDragging(false)
-    if (offset < -40) {
-      setOffset(-80)
+    if (offset < -50) {
+      setOffset(SWIPE_MAX)
     } else {
       setOffset(0)
     }
@@ -73,14 +78,14 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
     currentX.current = e.clientX
     const diff = currentX.current - startX.current
     if (diff < 0) {
-      setOffset(Math.max(diff, -80))
+      setOffset(Math.max(diff, SWIPE_MAX))
     }
   }
 
   const handleMouseUp = () => {
     setIsDragging(false)
-    if (offset < -40) {
-      setOffset(-80)
+    if (offset < -50) {
+      setOffset(SWIPE_MAX)
     } else {
       setOffset(0)
     }
@@ -90,8 +95,8 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
     const handleGlobalMouseUp = () => {
       if (isDragging) {
         setIsDragging(false)
-        if (offset < -40) {
-          setOffset(-80)
+        if (offset < -50) {
+          setOffset(SWIPE_MAX)
         } else {
           setOffset(0)
         }
@@ -108,13 +113,19 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
 
   return (
     <div className="relative overflow-hidden rounded-lg mb-1">
-      {/* Delete button background */}
-      <div className="absolute right-0 top-0 bottom-0 w-20 bg-expense flex items-center justify-center">
+      {/* Action buttons background */}
+      <div className="absolute right-0 top-0 bottom-0 flex">
+        <button
+          onClick={() => onEdit(t)}
+          className="w-[70px] bg-lavender flex items-center justify-center h-full"
+        >
+          <span className="text-white text-xs font-bold">编辑</span>
+        </button>
         <button
           onClick={() => onDelete(t.id!)}
-          className="text-white text-sm font-medium px-4 py-2"
+          className="w-[70px] bg-expense flex items-center justify-center h-full"
         >
-          删除
+          <span className="text-white text-xs font-bold">删除</span>
         </button>
       </div>
 
@@ -124,7 +135,7 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
         animate={{ opacity: 1, x: offset }}
         transition={{ delay: i * 0.04, type: 'spring', stiffness: 300, damping: 30 }}
         className="relative flex items-center justify-between py-3.5 px-4 bg-white border-b border-border/50 last:border-0 touch-none"
-        title="左滑删除记录"
+        title="左滑编辑/删除记录"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -153,10 +164,10 @@ function SwipeableRecord({ t, i, onDelete }: { t: any; i: number; onDelete: (id:
       </motion.div>
     </div>
   )
-}
+})
 
 export default function Timeline({ collapsedByParent = false }: { collapsedByParent?: boolean }) {
-  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage } = useAppStore()
+  const { currentDate, recordFilter, setRecordFilter, goPrevDay, goNextDay, goToday, openCategoryPage, openEditTransaction } = useAppStore()
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -187,6 +198,22 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
     await db.transactions.delete(id)
   }
 
+  const handleEditRecord = (tx: any) => {
+    const cat = getCategoryObj(tx.category)
+    openEditTransaction(
+      {
+        id: tx.id,
+        date: tx.date,
+        category: tx.category,
+        amount: tx.amount,
+        type: tx.type,
+        note: tx.note,
+        mood: tx.mood,
+      },
+      cat
+    )
+  }
+
   const handleResetToday = async () => {
     await db.transactions.where('date').equals(today).delete()
     setShowResetConfirm(false)
@@ -196,18 +223,19 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
     <div className="flex-1 flex flex-col">
       {/* Date navigation */}
       <div className="flex items-center justify-between mb-4 px-1">
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={goPrevDay}
-          className="w-8 h-8 rounded-full bg-white border border-border flex items-center justify-center text-sub hover:border-primary transition-colors"
+          className="w-9 h-9 rounded-full bg-white border-2 border-dashed border-border flex items-center justify-center text-sub hover:border-coral hover:text-coral transition-colors shadow-warm"
         >
           ‹
-        </button>
+        </motion.button>
 
         <div className="flex items-center gap-2">
           <button
             onClick={goToday}
-            className={`text-sm font-medium transition-colors ${
-              isToday ? 'text-primary' : 'text-text'
+            className={`text-sm font-bold transition-colors ${
+              isToday ? 'text-coral' : 'text-text'
             }`}
           >
             {formatDateLabel(currentDate)}
@@ -215,7 +243,8 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
           </button>
 
           {isToday && filteredTransactions.length > 0 && (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.85 }}
               onClick={() => setShowResetConfirm(true)}
               className="w-7 h-7 rounded-full flex items-center justify-center text-sub/40 hover:text-expense hover:bg-expense/10 transition-colors"
               title="重置今日记录"
@@ -224,16 +253,17 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               </svg>
-            </button>
+            </motion.button>
           )}
         </div>
 
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={goNextDay}
-          className="w-8 h-8 rounded-full bg-white border border-border flex items-center justify-center text-sub hover:border-primary transition-colors"
+          className="w-9 h-9 rounded-full bg-white border-2 border-dashed border-border flex items-center justify-center text-sub hover:border-coral hover:text-coral transition-colors shadow-warm"
         >
           ›
-        </button>
+        </motion.button>
       </div>
 
       {/* Summary row */}
@@ -323,14 +353,15 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
                 t={t}
                 i={i}
                 onDelete={handleDeleteRecord}
+                onEdit={handleEditRecord}
               />
             ))}
-            {filteredTransactions.length > MAX_VISIBLE_RECORDS && (
+ {filteredTransactions.length > MAX_VISIBLE_RECORDS && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full py-3 text-xs text-primary font-medium bg-bg/50 hover:bg-bg transition-colors"
+                className="w-full py-3 text-xs text-coral font-bold bg-cream-dark/50 hover:bg-cream-dark transition-colors rounded-2xl"
               >
-                {isExpanded ? '收起' : `展开更多 (${filteredTransactions.length - MAX_VISIBLE_RECORDS}条)`}
+                {isExpanded ? '收起 🌸' : `展开更多 (${filteredTransactions.length - MAX_VISIBLE_RECORDS}条) ✨`}
               </button>
             )}
           </div>
@@ -349,9 +380,10 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
 
       {/* Floating action button */}
       <motion.button
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.85 }}
+        whileHover={{ scale: 1.05, rotate: 5 }}
         onClick={openCategoryPage}
-        className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center text-2xl z-30"
+        className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-coral text-white shadow-cute flex items-center justify-center text-2xl z-30 border-2 border-white"
       >
         ✏️
       </motion.button>

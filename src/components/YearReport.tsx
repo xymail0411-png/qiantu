@@ -139,31 +139,32 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
             selectedMonth === null ? (
               <>
                 <p className="text-xs text-sub mb-3">点击月份查看分类详情</p>
-                <div className="flex items-end gap-1.5 h-40 mb-3">
+                <div className="flex items-end gap-1.5 h-48 mb-3">
                   {monthlyData.map((m) => {
-                    const height = maxMonthly > 0 ? (m.expense / maxMonthly) * 100 : 0
+                    const heightPercent = maxMonthly > 0 ? (m.expense / maxMonthly) * 100 : 0
                     const isCurrent = m.month === new Date().getMonth()
                     const hasExpense = m.expense > 0
+                    const barHeight = hasExpense ? Math.max(heightPercent, 8) : 2
                     return (
                       <button
                         key={m.month}
                         onClick={() => setSelectedMonth(m.month)}
                         className="flex-1 flex flex-col items-center justify-end gap-1 group"
                       >
-                        <span className="text-[8px] text-sub/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-[9px] text-sub/70 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
                           {hasExpense ? `¥${m.expense.toFixed(0)}` : ''}
                         </span>
                         <motion.div
                           initial={{ height: 0 }}
-                          animate={{ height: `${Math.max(height, hasExpense ? 4 : 2)}%` }}
-                          transition={{ delay: m.month * 0.04, duration: 0.4 }}
-                          className={`w-full rounded-t-lg transition-all ${
-                            isCurrent ? 'bg-primary/60'
-                            : hasExpense ? 'bg-primary/30 group-hover:bg-primary/50 cursor-pointer'
-                            : 'bg-border/20'
+                          animate={{ height: `${barHeight}%` }}
+                          transition={{ delay: m.month * 0.05, duration: 0.5, ease: "easeOut" }}
+                          className={`w-full rounded-t-md transition-all ${
+                            isCurrent ? 'bg-primary'
+                            : hasExpense ? 'bg-primary/40 group-hover:bg-primary/60 cursor-pointer'
+                            : 'bg-border/30'
                           }`}
                         />
-                        <span className={`text-[9px] ${isCurrent ? 'text-primary font-medium' : 'text-sub/60'}`}>
+                        <span className={`text-[10px] ${isCurrent ? 'text-primary font-bold' : 'text-sub/70'}`}>
                           {m.month + 1}
                         </span>
                       </button>

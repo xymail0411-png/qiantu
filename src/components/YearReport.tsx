@@ -90,7 +90,7 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-md max-h-[85vh] bg-white rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col"
+        className="w-full max-w-3xl lg:max-w-4xl max-h-[85vh] bg-white rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

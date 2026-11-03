@@ -5,7 +5,7 @@ import { useAppStore } from '../store'
 import { defaultEquivalents } from '../data/equivalents'
 
 export default function AmountInput() {
-  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, openAmountInput, triggerRefresh } = useAppStore()
+  const { showAmountInput, selectedCategory, currentDate, closeAmountInput, closeCategoryPage, triggerRefresh } = useAppStore()
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [mood, setMood] = useState('')
@@ -164,7 +164,7 @@ export default function AmountInput() {
             exit={{ opacity: 0 }}
           />
           <motion.div
-            className="relative w-full max-w-md mx-auto bg-white rounded-t-3xl p-6 pb-8 md:max-w-2xl md:rounded-b-3xl md:my-8 md:shadow-2xl md:border md:border-border/30"
+            className="relative w-full max-w-3xl lg:max-w-4xl mx-auto bg-white rounded-t-3xl p-6 pb-8 md:rounded-b-3xl md:my-8 md:shadow-2xl md:border md:border-border/30"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { db } from '../db'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { allCategories } from '../data/categories'
 
 function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
@@ -38,14 +39,35 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
 
   const [checkInDays, setCheckInDays] = useState<Set<number>>(new Set())
   const [dayMoodMap, setDayMoodMap] = useState<Map<number, string>>(new Map())
-  const [dailyExpenses, setDailyExpenses] = useState<{ day: number; amount: number }[]>([])
+
+  const todayStr = now.toISOString().slice(0, 10)
+  const todayTransactions = useLiveQuery(
+    () => db.transactions
+      .where('date')
+      .equals(todayStr)
+      .filter(t => t.type === 'expense')
+      .toArray(),
+    [todayStr]
+  )
+
+  const topItems = useMemo(() => {
+    if (!todayTransactions) return []
+    return todayTransactions
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5)
+      .map(t => ({
+        name: t.note || t.category,
+        amount: t.amount,
+        icon: allCategories.find(c => c.label === t.category)?.icon || '📝',
+        time: new Date(t.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+      }))
+  }, [todayTransactions])
 
   useEffect(() => {
     if (!transactions) return
 
     const days = new Set<number>()
     const moodByDay: Record<number, string[]> = {}
-    const daily: Record<number, number> = {}
 
     for (const t of transactions) {
       const day = parseInt(t.date.split('-')[2])
@@ -54,10 +76,6 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
       if (t.mood) {
         if (!moodByDay[day]) moodByDay[day] = []
         moodByDay[day].push(t.mood)
-      }
-
-      if (t.type === 'expense') {
-        daily[day] = (daily[day] || 0) + t.amount
       }
     }
 
@@ -71,21 +89,17 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
 
     setCheckInDays(days)
     setDayMoodMap(modeMap)
-    setDailyExpenses(
-      Object.entries(daily).map(([d, amount]) => ({ day: parseInt(d), amount }))
-    )
   }, [transactions])
 
   const daysInMonth = getDaysInMonth(year, month)
   const firstDay = getFirstDayOfMonth(year, month)
-  const maxExpense = Math.max(...dailyExpenses.map((d) => d.amount), 1)
 
-  const totalExpense = dailyExpenses.reduce((sum, d) => sum + d.amount, 0)
+  const totalExpense = transactions?.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0) || 0
   const checkInCount = checkInDays.size
   const avgExpense = checkInCount > 0 ? totalExpense / checkInCount : 0
 
   return (
-    <div className="mb-4">
+    <div className="relative">
       <button
         onClick={handleToggle}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-border text-xs text-sub hover:border-primary transition-colors"
@@ -103,14 +117,21 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-3 bg-white rounded-2xl p-4 shadow-sm border border-border space-y-4">
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-30"
+              onClick={handleToggle}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-full mt-2 w-80 max-w-[90vw] bg-white rounded-2xl p-4 shadow-lg border border-border z-40 space-y-4"
+            >
               {/* Stats summary */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 bg-bg rounded-xl">
@@ -171,47 +192,32 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
                 </div>
               </div>
 
-              {/* Daily expense bar chart */}
-              {dailyExpenses.length > 0 && (
+              {/* Today's top spending items */}
+              {topItems.length > 0 && (
                 <div>
-                  <p className="text-xs text-sub mb-2">📈 每日支出</p>
-                  <div className="flex items-end gap-0.5 h-16">
-                    {Array.from({ length: daysInMonth }).map((_, i) => {
-                      const day = i + 1
-                      const expense = dailyExpenses.find((d) => d.day === day)
-                      const height = expense ? (expense.amount / maxExpense) * 100 : 0
-                      const isToday = day === today
-
-                      return (
-                        <div
-                          key={day}
-                          className="flex-1 flex flex-col items-center justify-end"
-                          title={`${day}日: ¥${expense?.amount.toFixed(2) || '0'}`}
-                        >
-                          <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: `${height}%` }}
-                            transition={{ delay: i * 0.02, duration: 0.3 }}
-                            className={`w-full rounded-t-sm min-h-[2px] ${
-                              isToday
-                                ? 'bg-primary'
-                                : expense
-                                ? 'bg-expense/60'
-                                : 'bg-border/30'
-                            }`}
-                          />
+                  <p className="text-xs text-sub mb-2">🛍️ 今日消费明细</p>
+                  <div className="space-y-2">
+                    {topItems.map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="flex items-center gap-3 p-2.5 bg-bg rounded-xl"
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        <div className="flex-1">
+                          <p className="text-xs font-medium text-text">{item.name}</p>
+                          <p className="text-[10px] text-sub">{item.time}</p>
                         </div>
-                      )
-                    })}
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span className="text-[9px] text-sub/60">1日</span>
-                    <span className="text-[9px] text-sub/60">{daysInMonth}日</span>
+                        <span className="text-sm font-medium text-expense">-¥{item.amount.toFixed(2)}</span>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
               )}
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

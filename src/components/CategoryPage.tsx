@@ -32,8 +32,8 @@ export default function CategoryPage() {
 
   return (
     <div className="fixed inset-0 z-50 bg-bg md:bg-black/30 md:flex md:items-center md:justify-center" onClick={closeCategoryPage}>
-      <div className="max-w-md mx-auto h-full flex flex-col md:h-[90vh] md:rounded-3xl md:shadow-2xl md:border md:border-border/30 md:overflow-hidden bg-bg" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-4 pt-6 pb-4">
+      <div className="max-w-3xl lg:max-w-4xl mx-auto h-full flex flex-col md:h-[90vh] md:rounded-3xl md:shadow-2xl md:border md:border-border/30 md:overflow-hidden bg-bg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <button
             onClick={closeCategoryPage}
             className="text-sub text-sm flex items-center gap-1"
@@ -44,13 +44,13 @@ export default function CategoryPage() {
           <div className="w-16" />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-8">
+        <div className="flex-1 overflow-y-auto px-6 pb-8">
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-4 bg-expense rounded-full" />
               <h3 className="text-sm font-medium text-text">支出</h3>
             </div>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-4 md:grid-cols-7 lg:grid-cols-8">
               {expenseCategories.map((cat, i) => (
                 <CategoryButton key={cat.label} cat={cat} index={i} onClick={handleCategoryClick} />
               ))}
@@ -62,7 +62,7 @@ export default function CategoryPage() {
               <div className="w-1 h-4 bg-income rounded-full" />
               <h3 className="text-sm font-medium text-text">收入</h3>
             </div>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-4 md:grid-cols-7 lg:grid-cols-8">
               {incomeCategories.map((cat, i) => (
                 <CategoryButton key={cat.label} cat={cat} index={i} onClick={handleCategoryClick} />
               ))}

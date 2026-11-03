@@ -135,7 +135,7 @@ export default function BlindBoxAnimation({
               <motion.span
                 className={`text-xs mt-1 px-2 py-0.5 rounded-full font-medium ${
                   prize.rarity === 'legendary' ? 'bg-lavender-light/50 text-lavender' :
-                  prize.rarity === 'rare' ? 'bg-warm-yellow/20 text-warm-yellow' :
+                  prize.rarity === 'rare' ? 'bg-warm-yellow/30 text-text' :
                   'bg-cream-dark text-sub'
                 }`}
                 initial={{ opacity: 0 }}

@@ -250,7 +250,7 @@ export default function AmountInput() {
                   'bg-coral-light/40 border-coral/40 text-coral',
                   'bg-lavender-light/45 border-lavender/40 text-lavender',
                   'bg-mint-light/45 border-mint/40 text-mint',
-                  'bg-warm-yellow/35 border-warm-yellow/40 text-warm-yellow',
+                  'bg-warm-yellow/35 border-warm-yellow/40 text-text',
                   'bg-warm-blue/40 border-warm-blue/40 text-warm-blue',
                   'bg-coral-light/35 border-coral/35 text-coral',
                 ]

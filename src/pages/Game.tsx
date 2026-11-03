@@ -485,34 +485,6 @@ export default function GamePage() {
               </p>
             )}
           </div>
-
-          <div className="flex flex-col items-center gap-1.5">
-            <div className="flex gap-1">
-              {[
-                { threshold: 3, label: '3天', emoji: '🌱' },
-                { threshold: 7, label: '7天', emoji: '🌿' },
-                { threshold: 14, label: '14天', emoji: '🌳' },
-                { threshold: 30, label: '30天', emoji: '🏆' },
-              ].map((milestone) => {
-                const reached = (streak || 0) >= milestone.threshold
-                return (
-                  <div
-                    key={milestone.threshold}
-                    className={`flex flex-col items-center px-1.5 py-1 rounded-xl transition-all ${
-                      reached
-                        ? 'bg-coral-light/40 border border-coral/30'
-                        : 'bg-cream-dark border border-border/50'
-                    }`}
-                  >
-                    <span className="text-sm">{reached ? milestone.emoji : '⬜'}</span>
-                    <span className={`text-[9px] font-bold ${reached ? 'text-coral' : 'text-sub/50'}`}>
-                      {milestone.label}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         </div>
 
         <motion.button

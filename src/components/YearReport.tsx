@@ -82,7 +82,7 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <motion.div
@@ -90,7 +90,7 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col mx-4"
+        className="w-full max-w-md max-h-[80vh] bg-white rounded-3xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg md:bg-gradient-to-br md:from-bg md:via-blue-50/30 md:to-bg">
-      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-5xl lg:max-w-6xl xl:max-w-7xl md:px-8 lg:px-12">
+      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-2xl lg:max-w-3xl md:px-8">
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-text">钱途</h1>

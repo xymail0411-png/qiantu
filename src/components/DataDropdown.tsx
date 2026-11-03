@@ -135,7 +135,7 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
             >
               {/* Header */}
               <div className="relative p-5 pb-4 bg-gradient-to-br from-coral-light/20 via-lavender-light/20 to-cream-dark">
-                <button onClick={handleToggle} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm hover:text-coral transition-colors">✕</button>
+                <button onClick={handleToggle} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-coral-light/50 text-expense flex items-center justify-center text-sm hover:bg-expense hover:text-white transition-colors border border-expense/20">✕</button>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-2xl">📊</span>
                   <h2 className="text-lg font-bold text-text">消费趋势</h2>

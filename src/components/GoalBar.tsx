@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GoalBar() {
@@ -28,27 +28,39 @@ export default function GoalBar() {
   const [hasDeadline, setHasDeadline] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationText, setCelebrationText] = useState('')
-  const [prevProgress, setPrevProgress] = useState(0)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const lastProgressRef = useRef(0)
+  const lastGoalIdRef = useRef<number | undefined>(undefined)
 
+  // 当目标改变时，重置状态
+  useEffect(() => {
+    if (goal?.id !== lastGoalIdRef.current) {
+      lastGoalIdRef.current = goal?.id
+      lastProgressRef.current = 0
+      setShowCelebration(false)
+    }
+  }, [goal?.id])
+
+  // 里程碑同步：基于当前进度直接同步，不依赖状态转换
   useEffect(() => {
     if (!goal || totalSavings === undefined) return
     
     const currentProgress = (Math.max(0, totalSavings) / goal.targetAmount) * 100
     const achieved = goal.achievedMilestones || []
     let updated = false
-    let newAchieved = [...achieved]
+    const newAchieved = [...achieved]
+    const lastProgress = lastProgressRef.current
     
-    // 进度增长时触发里程碑
-    if (currentProgress > prevProgress) {
-      if (prevProgress < 50 && currentProgress >= 50 && !newAchieved.includes(50)) {
+    // 进度上升时触发庆祝
+    if (currentProgress > lastProgress) {
+      if (lastProgress < 50 && currentProgress >= 50 && !newAchieved.includes(50)) {
         setCelebrationText('🎊 存到一半啦！继续冲！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
         newAchieved.push(50)
         updated = true
       }
-      if (prevProgress < 100 && currentProgress >= 100 && !newAchieved.includes(100)) {
+      if (lastProgress < 100 && currentProgress >= 100 && !newAchieved.includes(100)) {
         setCelebrationText('🎉 目标达成！你太棒了！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
@@ -57,13 +69,23 @@ export default function GoalBar() {
       }
     }
     
-    // 进度下降时撤销不再满足的里程碑
+    // 始终同步：进度不满足时撤销里程碑
     if (currentProgress < 50 && newAchieved.includes(50)) {
-      newAchieved = newAchieved.filter(m => m !== 50)
+      newAchieved.splice(newAchieved.indexOf(50), 1)
       updated = true
     }
     if (currentProgress < 100 && newAchieved.includes(100)) {
-      newAchieved = newAchieved.filter(m => m !== 100)
+      newAchieved.splice(newAchieved.indexOf(100), 1)
+      updated = true
+    }
+    
+    // 进度满足但里程碑缺失时补上（不触发庆祝）
+    if (currentProgress >= 50 && !newAchieved.includes(50)) {
+      newAchieved.push(50)
+      updated = true
+    }
+    if (currentProgress >= 100 && !newAchieved.includes(100)) {
+      newAchieved.push(100)
       updated = true
     }
     
@@ -71,14 +93,8 @@ export default function GoalBar() {
       db.goals.update(goal.id!, { achievedMilestones: newAchieved })
     }
     
-    setPrevProgress(currentProgress)
+    lastProgressRef.current = currentProgress
   }, [totalSavings, goal])
-
-  // 当目标改变时，重置进度状态
-  useEffect(() => {
-    setPrevProgress(0)
-    setShowCelebration(false)
-  }, [goal?.id])
 
   const openForm = () => {
     if (goal) {

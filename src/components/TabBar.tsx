@@ -13,14 +13,14 @@ export default function TabBar() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t-2 border-dashed border-border z-40 md:border-x md:rounded-t-3xl md:shadow-soft">
-      <div className="max-w-2xl lg:max-w-3xl mx-auto flex items-center justify-around h-18 py-2 md:px-8">
+      <div className="max-w-2xl lg:max-w-3xl mx-auto flex items-center justify-around h-16 sm:h-18 py-1.5 sm:py-2 md:px-8">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.key
           return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className="relative flex flex-col items-center gap-1 py-2 px-6 md:px-10 rounded-2xl transition-all"
+              className="relative flex flex-col items-center gap-0.5 sm:gap-1 py-1.5 sm:py-2 px-4 sm:px-6 md:px-10 rounded-2xl transition-all"
             >
               {isActive && (
                 <motion.div
@@ -30,13 +30,13 @@ export default function TabBar() {
                 />
               )}
               <motion.span
-                className="text-2xl relative z-10"
+                className="text-xl sm:text-2xl relative z-10"
                 animate={isActive ? { scale: [1, 1.2, 1.1], rotate: [0, -5, 5, 0] } : { scale: 1 }}
                 transition={{ duration: 0.4 }}
               >
                 {tab.icon}
               </motion.span>
-              <span className={`text-xs relative z-10 transition-colors ${
+              <span className={`text-[10px] sm:text-xs relative z-10 transition-colors ${
                 isActive ? 'text-text font-bold' : 'text-sub'
               }`}>
                 {tab.label}

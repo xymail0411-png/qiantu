@@ -95,22 +95,22 @@ export default function YearReport({ onClose }: { onClose: () => void }) {
       >
         {/* Header */}
         <div className="relative p-5 pb-4 bg-gradient-to-br from-coral-light/20 via-lavender-light/20 to-cream-dark">
-          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 text-sub flex items-center justify-center text-sm hover:text-coral transition-colors">✕</button>
+          <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-coral-light/50 text-expense flex items-center justify-center text-sm hover:bg-expense hover:text-white transition-colors border border-expense/20">✕</button>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">📊</span>
             <h2 className="text-lg font-bold text-text">{year}年度消费报告</h2>
           </div>
           <p className="text-xs text-sub">看看你的钱都花哪了 🌸</p>
           <div className="flex gap-2 mt-4">
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-coral/10">
+            <div className="flex-1 px-3 py-2 bg-coral-light/30 rounded-2xl border border-coral/20">
               <p className="text-[10px] text-sub">总支出</p>
               <p className="text-sm font-bold text-expense">¥{totalExpense.toFixed(0)}</p>
             </div>
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-mint/10">
+            <div className="flex-1 px-3 py-2 bg-mint-light/30 rounded-2xl border border-mint/20">
               <p className="text-[10px] text-sub">总收入</p>
               <p className="text-sm font-bold text-income">¥{totalIncome.toFixed(0)}</p>
             </div>
-            <div className="flex-1 px-3 py-2 bg-white/80 rounded-2xl backdrop-blur border border-lavender/10">
+            <div className="flex-1 px-3 py-2 bg-lavender-light/30 rounded-2xl border border-lavender/20">
               <p className="text-[10px] text-sub">结余</p>
               <p className="text-sm font-bold text-coral">¥{(totalIncome - totalExpense).toFixed(0)}</p>
             </div>

@@ -29,24 +29,24 @@ export default function App() {
         <span className="absolute top-[45%] left-[92%] text-lg opacity-[0.05] -rotate-12">⭐</span>
         <span className="absolute top-[25%] left-[90%] text-xl opacity-[0.04] rotate-6">🌙</span>
       </div>
-      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-2xl lg:max-w-3xl md:px-8 relative z-10">
-        <header className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo/qiantu-logo.png" alt="钱途" className="w-10 h-10 rounded-xl" />
+      <div className="w-full mx-auto px-3 pt-4 pb-20 min-h-screen sm:px-4 sm:pt-6 sm:pb-24 md:max-w-2xl md:px-8 lg:max-w-3xl relative z-10">
+        <header className="mb-4 sm:mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img src="/logo/qiantu-logo.png" alt="钱途" className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl" />
             <div>
-              <h1 className="text-2xl font-extrabold text-text">钱途</h1>
-              <p className="text-xs text-sub mt-0.5">✨ 让每一笔消费都有意义 ☁️</p>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-text">钱途</h1>
+              <p className="text-[10px] sm:text-xs text-sub mt-0.5 hidden sm:block">✨ 让每一笔消费都有意义 ☁️</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <DataDropdown onOpenChange={setIsDataDropdownOpen} />
             <button
               onClick={() => setShowYearReport(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border-2 border-dashed border-border hover:border-coral transition-colors group shadow-warm"
+              className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white border-2 border-dashed border-border hover:border-coral transition-colors group shadow-warm"
             >
-              <span className="text-base">📊</span>
-              <span className="text-sm text-sub group-hover:text-coral transition-colors font-medium">{new Date().getFullYear()}年</span>
-              <span className="text-xs text-sub/60">▾</span>
+              <span className="text-sm sm:text-base">📊</span>
+              <span className="text-xs sm:text-sm text-sub group-hover:text-coral transition-colors font-medium">{new Date().getFullYear()}年</span>
+              <span className="text-[10px] sm:text-xs text-sub/60 hidden sm:inline">▾</span>
             </button>
           </div>
         </header>

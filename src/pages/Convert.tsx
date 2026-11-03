@@ -119,6 +119,7 @@ export default function ConvertPage() {
             {showAddWish ? '取消' : '+ 添加'}
           </button>
         </div>
+        <p className="text-xs text-sub/60 mb-3 -mt-2">今天花的钱能换多少愿望？</p>
 
         <AnimatePresence>
           {showAddWish && (
@@ -166,14 +167,14 @@ export default function ConvertPage() {
         </AnimatePresence>
 
         {wishlist && wishlist.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
             {wishlist.map((item) => {
-              const daysNeeded = amount > 0 ? Math.ceil(item.price / amount) : '∞'
+              const count = amount > 0 ? amount / item.price : 0
               return (
                 <motion.div
                   key={item.id}
                   layout
-                  className="relative p-3 bg-bg rounded-xl"
+                  className="relative p-4 bg-bg rounded-xl flex items-center gap-3"
                 >
                   <button
                     onClick={() => handleDeleteWish(item.id!)}
@@ -181,21 +182,31 @@ export default function ConvertPage() {
                   >
                     ✕
                   </button>
-                  <span className="text-2xl">{item.icon}</span>
-                  <p className="text-sm font-medium text-text mt-1">{item.name}</p>
-                  <p className="text-xs text-sub">¥{item.price}</p>
-                  <div className="mt-2 pt-2 border-t border-border/50">
-                    <p className="text-xs text-primary">
-                      = {amount > 0 ? `${daysNeeded} 天` : '记一笔再看'}
-                    </p>
+                  <span className="text-3xl">{item.icon}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-text">{item.name}</p>
+                    <p className="text-xs text-sub">¥{item.price}</p>
                   </div>
+                  {amount > 0 ? (
+                    <div className="text-right">
+                      <p className="text-lg font-medium text-primary">≈</p>
+                      <p className="text-sm text-primary font-medium">
+                        {count >= 1 ? Math.floor(count) : count.toFixed(1)}个
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-right">
+                      <p className="text-xs text-sub">记一笔</p>
+                      <p className="text-xs text-sub">再看</p>
+                    </div>
+                  )}
                 </motion.div>
               )
             })}
           </div>
         ) : (
           <p className="text-sm text-sub text-center py-4">
-            添加想买的东西，看看要攒几天
+            添加想要的东西，看看今天消费能换多少
           </p>
         )}
       </div>

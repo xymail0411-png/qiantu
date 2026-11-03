@@ -147,15 +147,15 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 {/* Stats summary */}
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="text-center p-2 bg-coral-light/15 rounded-2xl border border-coral/10">
+                  <div className="text-center p-2 bg-coral-light/30 rounded-2xl border border-coral/20">
                     <p className="text-lg font-bold text-coral">{checkInCount}</p>
                     <p className="text-[10px] text-sub">打卡天数</p>
                   </div>
-                  <div className="text-center p-2 bg-lavender-light/20 rounded-2xl border border-lavender/10">
+                  <div className="text-center p-2 bg-lavender-light/35 rounded-2xl border border-lavender/20">
                     <p className="text-lg font-bold text-expense">¥{totalExpense.toFixed(0)}</p>
                     <p className="text-[10px] text-sub">本月支出</p>
                   </div>
-                  <div className="text-center p-2 bg-mint-light/20 rounded-2xl border border-mint/10">
+                  <div className="text-center p-2 bg-mint-light/35 rounded-2xl border border-mint/20">
                     <p className="text-lg font-bold text-text">¥{avgExpense.toFixed(0)}</p>
                     <p className="text-[10px] text-sub">日均消费</p>
                   </div>
@@ -184,9 +184,9 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
                         key={day}
                         className={`relative aspect-square flex items-center justify-center rounded-xl text-[10px] ${
                           isToday
-                            ? 'bg-coral-light/20 text-coral font-bold ring-2 ring-coral/30'
+                            ? 'bg-coral-light/35 text-coral font-bold ring-2 ring-coral/30'
                             : isCheckedIn
-                            ? 'bg-mint-light/20 text-mint'
+                            ? 'bg-mint-light/35 text-mint'
                             : 'bg-cream-dark/50 text-sub/40'
                         }`}
                       >
@@ -234,7 +234,7 @@ export default function DataDropdown({ onOpenChange }: { onOpenChange?: (isOpen:
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => exportToCSV()}
-                className="w-full py-3 text-xs text-coral font-bold bg-coral-light/10 rounded-2xl border-2 border-dashed border-coral/20 hover:bg-coral-light/20 transition-colors"
+                className="w-full py-3 text-xs text-coral font-bold bg-coral-light/25 rounded-2xl border-2 border-dashed border-coral/30 hover:bg-coral-light/35 transition-colors"
               >
                 📥 导出CSV数据
               </motion.button>

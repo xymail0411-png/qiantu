@@ -4,8 +4,8 @@ import type { Category } from '../data/categories'
 import { motion } from 'framer-motion'
 
 const macaronColors = [
-  'bg-coral-light/20', 'bg-lavender-light/25', 'bg-mint-light/25', 'bg-cream-dark',
-  'bg-warm-yellow/15', 'bg-warm-blue/20', 'bg-coral-light/15', 'bg-lavender-light/20',
+  'bg-coral-light/50', 'bg-lavender-light/50', 'bg-mint-light/50', 'bg-cream-dark',
+  'bg-warm-yellow/40', 'bg-warm-blue/45', 'bg-coral-light/40', 'bg-lavender-light/45',
 ]
 
 function CategoryButton({ cat, index, onClick }: { cat: Category; index: number; onClick: (cat: Category) => void }) {

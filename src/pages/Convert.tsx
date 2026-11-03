@@ -97,7 +97,7 @@ export default function ConvertPage() {
         <div className="bg-white rounded-2xl p-5 shadow-soft border-2 border-dashed border-border">
           <div className="grid grid-cols-3 gap-3">
             {topEquivalents.map((eq, idx) => {
-              const bgColors = ['bg-coral-light/20', 'bg-lavender-light/30', 'bg-mint-light/30']
+              const bgColors = ['bg-coral-light/40', 'bg-lavender-light/45', 'bg-mint-light/45']
               return (
                 <div
                   key={eq.id}
@@ -121,7 +121,9 @@ export default function ConvertPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl p-8 shadow-soft border-2 border-dashed border-border text-center">
+        <div className="bg-white rounded-2xl p-8 shadow-soft border-2 border-dashed border-border text-center relative overflow-hidden">
+          <span className="absolute top-3 left-4 text-lg opacity-[0.08]">☁️</span>
+          <span className="absolute bottom-4 right-5 text-sm opacity-[0.06]">🌸</span>
           <span className="text-4xl block mb-3">📝</span>
           <p className="text-sm text-sub">记一笔支出后来看换算 ✨</p>
         </div>
@@ -242,11 +244,11 @@ export default function ConvertPage() {
                 <motion.div
                   key={item.id}
                   layout
-                  className="relative p-4 bg-cream rounded-2xl flex items-center gap-3 border border-border"
+                  className="relative p-4 bg-cream-dark rounded-2xl flex items-center gap-3 border-2 border-dashed border-border"
                 >
                   <button
                     onClick={() => handleDeleteWish(item.id!)}
-                    className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 text-sub/60 hover:text-expense text-xs flex items-center justify-center"
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-coral-light/30 text-expense hover:bg-expense hover:text-white text-xs flex items-center justify-center transition-colors border border-expense/20"
                   >
                     ✕
                   </button>
@@ -282,9 +284,15 @@ export default function ConvertPage() {
             })}
           </div>
         ) : (
-          <p className="text-sm text-sub text-center py-4">
-            添加想要的东西，看看今天消费能换多少
-          </p>
+          <div className="text-center py-6">
+            <span className="text-3xl block mb-2 opacity-40">🌟</span>
+            <p className="text-sm text-sub">
+              添加想要的东西，看看今天消费能换多少
+            </p>
+            <p className="text-xs text-sub/50 mt-1">
+              点击「+ 添加」开始吧 ✨
+            </p>
+          </div>
         )}
       </div>
     </div>

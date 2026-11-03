@@ -36,23 +36,39 @@ export default function GoalBar() {
     
     const currentProgress = (Math.max(0, totalSavings) / goal.targetAmount) * 100
     const achieved = goal.achievedMilestones || []
+    let updated = false
+    let newAchieved = [...achieved]
     
-    // 只在进度增长时触发，下降时不触发
+    // 进度增长时触发里程碑
     if (currentProgress > prevProgress) {
-      // 检查50%里程碑
-      if (prevProgress < 50 && currentProgress >= 50 && !achieved.includes(50)) {
+      if (prevProgress < 50 && currentProgress >= 50 && !newAchieved.includes(50)) {
         setCelebrationText('🎊 存到一半啦！继续冲！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
-        db.goals.update(goal.id!, { achievedMilestones: [...achieved, 50] })
+        newAchieved.push(50)
+        updated = true
       }
-      // 检查100%达成（不插旗，只庆祝）
-      else if (prevProgress < 100 && currentProgress >= 100 && !achieved.includes(100)) {
+      if (prevProgress < 100 && currentProgress >= 100 && !newAchieved.includes(100)) {
         setCelebrationText('🎉 目标达成！你太棒了！')
         setShowCelebration(true)
         setTimeout(() => setShowCelebration(false), 1500)
-        db.goals.update(goal.id!, { achievedMilestones: [...achieved, 100] })
+        newAchieved.push(100)
+        updated = true
       }
+    }
+    
+    // 进度下降时撤销不再满足的里程碑
+    if (currentProgress < 50 && newAchieved.includes(50)) {
+      newAchieved = newAchieved.filter(m => m !== 50)
+      updated = true
+    }
+    if (currentProgress < 100 && newAchieved.includes(100)) {
+      newAchieved = newAchieved.filter(m => m !== 100)
+      updated = true
+    }
+    
+    if (updated) {
+      db.goals.update(goal.id!, { achievedMilestones: newAchieved })
     }
     
     setPrevProgress(currentProgress)
@@ -202,15 +218,15 @@ export default function GoalBar() {
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
-          {/* 50% 旗帜标记 - 只在达成时显示 */}
+          {/* 50% 里程碑标记 */}
           {achievedMilestones.includes(50) && (
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="absolute top-0 -translate-y-full"
-              style={{ left: '50%', transform: 'translate(-50%, -100%)' }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute top-1/2 -translate-y-1/2"
+              style={{ left: '50%' }}
             >
-              <span className="text-base">🚩</span>
+              <span className="text-xs">🚩</span>
             </motion.div>
           )}
         </div>

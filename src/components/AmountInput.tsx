@@ -247,12 +247,12 @@ export default function AmountInput() {
             <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
               {[5, 10, 15, 20, 30, 50].map((val, idx) => {
                 const colors = [
-                  'bg-coral-light/20 border-coral/30 text-coral',
-                  'bg-lavender-light/25 border-lavender/30 text-lavender',
-                  'bg-mint-light/25 border-mint/30 text-mint',
-                  'bg-warm-yellow/15 border-warm-yellow/30 text-warm-yellow',
-                  'bg-warm-blue/20 border-warm-blue/30 text-warm-blue',
-                  'bg-coral-light/15 border-coral/20 text-coral',
+                  'bg-coral-light/40 border-coral/40 text-coral',
+                  'bg-lavender-light/45 border-lavender/40 text-lavender',
+                  'bg-mint-light/45 border-mint/40 text-mint',
+                  'bg-warm-yellow/35 border-warm-yellow/40 text-warm-yellow',
+                  'bg-warm-blue/40 border-warm-blue/40 text-warm-blue',
+                  'bg-coral-light/35 border-coral/35 text-coral',
                 ]
                 return (
                   <motion.button
@@ -303,8 +303,8 @@ export default function AmountInput() {
                   className={`h-14 rounded-2xl text-lg font-bold transition-colors border border-border/50 ${
                     idx % 2 === 0
                       ? 'bg-cream-dark text-text'
-                      : 'bg-coral-light/10 text-text'
-                  } active:bg-coral-light/30`}
+                      : 'bg-coral-light/30 text-text'
+                  } active:bg-coral-light/50`}
                 >
                   {key}
                 </motion.button>
@@ -318,7 +318,7 @@ export default function AmountInput() {
                   whileHover={{ scale: 1.02 }}
                   onClick={handleRecordAnother}
                   disabled={!amount || parseFloat(amount) <= 0}
-                  className="flex-1 h-14 rounded-2xl bg-lavender-light/30 text-lavender text-base font-bold border-2 border-dashed border-lavender/30 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+                  className="flex-1 h-14 rounded-2xl bg-lavender-light/50 text-lavender text-base font-bold border-2 border-dashed border-lavender/40 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
                 >
                   再记一笔 ✨
                 </motion.button>

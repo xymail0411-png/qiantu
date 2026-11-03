@@ -17,8 +17,19 @@ export default function App() {
   const [isDataDropdownOpen, setIsDataDropdownOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-cream md:bg-gradient-to-br md:from-cream md:via-coral-light/20 md:to-cream">
-      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-2xl lg:max-w-3xl md:px-8">
+    <div className="min-h-screen bg-cream md:bg-gradient-to-br md:from-cream md:via-coral-light/20 md:to-cream relative overflow-hidden">
+      {/* Scattered decorative elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none" aria-hidden="true">
+        <span className="absolute top-[8%] left-[5%] text-2xl opacity-[0.07] rotate-12">☁️</span>
+        <span className="absolute top-[15%] right-[8%] text-xl opacity-[0.06] -rotate-12">⭐</span>
+        <span className="absolute top-[35%] left-[3%] text-lg opacity-[0.05] rotate-6">🌸</span>
+        <span className="absolute top-[55%] right-[4%] text-xl opacity-[0.06] rotate-12">☁️</span>
+        <span className="absolute top-[75%] left-[7%] text-lg opacity-[0.05] -rotate-6">✨</span>
+        <span className="absolute bottom-[12%] right-[6%] text-2xl opacity-[0.07] rotate-12">🌸</span>
+        <span className="absolute top-[45%] left-[92%] text-lg opacity-[0.05] -rotate-12">⭐</span>
+        <span className="absolute top-[25%] left-[90%] text-xl opacity-[0.04] rotate-6">🌙</span>
+      </div>
+      <div className="w-full mx-auto px-4 pt-6 pb-24 min-h-screen md:max-w-2xl lg:max-w-3xl md:px-8 relative z-10">
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo/qiantu-logo.png" alt="钱途" className="w-10 h-10 rounded-xl" />

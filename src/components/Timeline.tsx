@@ -195,7 +195,18 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
   }) || []
 
   const handleDeleteRecord = async (id: number) => {
+    const tx = await db.transactions.get(id)
+    if (!tx) return
+
     await db.transactions.delete(id)
+
+    if (tx.date && tx.type === 'expense') {
+      const boxRecord = await db.boxHistory.where('date').equals(tx.date).first()
+      if (boxRecord) {
+        await db.boxHistory.delete(boxRecord.id!)
+        await db.achievements.where('prizeId').equals(boxRecord.prizeId).and(a => a.unlockedAt >= boxRecord.openedAt - 1000 && a.unlockedAt <= boxRecord.openedAt + 1000).delete()
+      }
+    }
   }
 
   const handleEditRecord = (tx: any) => {
@@ -366,7 +377,10 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16">
+          <div className="flex flex-col items-center justify-center py-16 relative">
+            <span className="absolute top-4 left-8 text-lg opacity-[0.08]">☁️</span>
+            <span className="absolute top-8 right-12 text-sm opacity-[0.06]">✨</span>
+            <span className="absolute bottom-6 left-16 text-sm opacity-[0.07]">🌸</span>
             <span className="text-4xl mb-3 opacity-30">📝</span>
             <p className="text-sm text-sub">
               {recordFilter !== 'all'
@@ -383,7 +397,8 @@ export default function Timeline({ collapsedByParent = false }: { collapsedByPar
         whileTap={{ scale: 0.85 }}
         whileHover={{ scale: 1.05, rotate: 5 }}
         onClick={openCategoryPage}
-        className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-coral text-white shadow-cute flex items-center justify-center text-2xl z-30 border-2 border-white"
+        className="fixed bottom-24 right-6 md:right-[calc(50%-13rem)] w-14 h-14 rounded-full bg-coral text-white shadow-cute flex items-center justify-center text-2xl z-30"
+        title="记一笔"
       >
         ✏️
       </motion.button>

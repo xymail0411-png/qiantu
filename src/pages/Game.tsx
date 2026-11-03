@@ -130,8 +130,29 @@ export default function GamePage() {
     const existingMilestones = await db.milestones.toArray()
     const existingKeys = new Set(existingMilestones.map((m) => m.key))
 
+    // Remove milestones that are no longer satisfied
     for (const ms of defaultMilestones) {
-      if (existingKeys.has(ms.key)) continue
+      if (!existingKeys.has(ms.key)) continue
+
+      let stillAchieved = false
+      const cond = ms.condition
+      if (cond.type === 'transaction_count') stillAchieved = totalTx >= cond.target
+      else if (cond.type === 'streak_days') stillAchieved = currentStreak >= cond.target
+      else if (cond.type === 'total_income') stillAchieved = totalIncome >= cond.target
+      else if (cond.type === 'box_count') stillAchieved = totalBoxes >= cond.target
+      else if (cond.type === 'badge_count') stillAchieved = unlockedBadges >= cond.target
+
+      if (!stillAchieved) {
+        await db.milestones.where('key').equals(ms.key).delete()
+      }
+    }
+
+    // Check for new milestones
+    const refreshedMilestones = await db.milestones.toArray()
+    const refreshedKeys = new Set(refreshedMilestones.map((m) => m.key))
+
+    for (const ms of defaultMilestones) {
+      if (refreshedKeys.has(ms.key)) continue
 
       let achieved = false
       const cond = ms.condition
@@ -381,9 +402,9 @@ export default function GamePage() {
               disabled={!canOpenBox}
               className={`mx-auto w-40 h-40 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${
                 opening
-                  ? 'border-coral bg-coral-light/20 animate-pulse'
+                  ? 'border-coral bg-coral-light/40 animate-pulse'
                   : canOpenBox
-                  ? 'border-coral bg-coral-light/10 hover:bg-coral-light/20 cursor-pointer shadow-warm'
+                  ? 'border-coral bg-coral-light/30 hover:bg-coral-light/40 cursor-pointer shadow-warm'
                   : 'border-border bg-cream-dark cursor-not-allowed'
               }`}
             >
@@ -412,7 +433,7 @@ export default function GamePage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               onClick={() => setShowSaveBlindBox(true)}
-              className="text-xs text-coral font-bold px-3 py-1.5 rounded-full bg-coral-light/15 border border-coral/20"
+              className="text-xs text-coral font-bold px-3 py-1.5 rounded-full bg-coral-light/30 border border-coral/30"
             >
               📸 保存图片
             </motion.button>
@@ -439,7 +460,7 @@ export default function GamePage() {
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-bold ${
             todayCheckedIn
-              ? 'bg-mint-light/30 text-mint border border-mint/20'
+              ? 'bg-mint-light/40 text-mint border border-mint/30'
               : 'bg-cream-dark text-sub border border-border'
           }`}>
             {todayCheckedIn ? '✅ 今日已打卡' : '⏳ 今日未打卡'}
@@ -448,44 +469,56 @@ export default function GamePage() {
 
         <div className="flex items-center gap-4">
           <div className="flex-1">
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-extrabold text-coral">{streak || 0}</span>
-              <span className="text-xs text-sub font-medium">天连续打卡</span>
+            <p className="text-xs text-sub font-medium mb-1">🔥 连续打卡</p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-4xl font-extrabold text-coral">{streak || 0}</span>
+              <span className="text-sm text-sub font-bold">天</span>
             </div>
             {streakBonus > 0 && (
-              <p className="text-xs text-mint font-medium mt-1">
+              <p className="text-xs text-mint font-bold mt-1.5 px-2 py-0.5 bg-mint-light/30 rounded-full inline-block">
                 ✨ 稀有概率 +{streakBonus}%
               </p>
             )}
             {streakBonus === 0 && (
-              <p className="text-xs text-sub mt-1">
-                连续3天打卡可获得概率加成 🌸
+              <p className="text-xs text-sub mt-1.5">
+                再坚持{3 - (streak || 0)}天可获得概率加成 🌸
               </p>
             )}
           </div>
 
-          <div className="text-right">
-            <div className="flex gap-0.5">
-              {[3, 7, 14, 30].map((threshold) => (
-                <div
-                  key={threshold}
-                  className={`w-2 h-6 rounded-full transition-colors ${
-                    (streak || 0) >= threshold ? 'bg-coral' : 'bg-border/40'
-                  }`}
-                  title={`${threshold}天`}
-                />
-              ))}
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex gap-1">
+              {[
+                { threshold: 3, label: '3天', emoji: '🌱' },
+                { threshold: 7, label: '7天', emoji: '🌿' },
+                { threshold: 14, label: '14天', emoji: '🌳' },
+                { threshold: 30, label: '30天', emoji: '🏆' },
+              ].map((milestone) => {
+                const reached = (streak || 0) >= milestone.threshold
+                return (
+                  <div
+                    key={milestone.threshold}
+                    className={`flex flex-col items-center px-1.5 py-1 rounded-xl transition-all ${
+                      reached
+                        ? 'bg-coral-light/40 border border-coral/30'
+                        : 'bg-cream-dark border border-border/50'
+                    }`}
+                  >
+                    <span className="text-sm">{reached ? milestone.emoji : '⬜'}</span>
+                    <span className={`text-[9px] font-bold ${reached ? 'text-coral' : 'text-sub/50'}`}>
+                      {milestone.label}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
-            <p className="text-[10px] text-sub mt-1">
-              {(streak || 0) >= 30 ? '30天 ✓' : (streak || 0) >= 14 ? '14天+' : (streak || 0) >= 7 ? '7天+' : (streak || 0) >= 3 ? '3天+' : '加油'}
-            </p>
           </div>
         </div>
 
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowSaveStreak(true)}
-          className="mt-3 w-full py-2 text-xs text-coral font-bold bg-coral-light/10 rounded-2xl border border-dashed border-coral/20"
+          className="mt-3 w-full py-2 text-xs text-coral font-bold bg-coral-light/25 rounded-2xl border border-dashed border-coral/30"
         >
           📸 保存打卡成就
         </motion.button>
@@ -512,7 +545,7 @@ export default function GamePage() {
             {(showAllBadges ? badges : badges.slice(0, 2)).map((badge, idx) => {
               const unlocked = badge.unlockedAt != null
               const progress = Math.min(badge.currentCount / badge.requiredCount, 1)
-              const macaronBgs = ['bg-coral-light/15', 'bg-lavender-light/20', 'bg-mint-light/20', 'bg-cream-dark']
+              const macaronBgs = ['bg-coral-light/30', 'bg-lavender-light/35', 'bg-mint-light/35', 'bg-cream-dark']
               return (
                 <motion.div
                   key={badge.id}
@@ -543,7 +576,7 @@ export default function GamePage() {
           {badges.length > 2 && (
             <button
               onClick={() => setShowAllBadges(!showAllBadges)}
-              className="w-full mt-3 py-2 text-xs text-coral font-bold hover:bg-coral-light/10 rounded-2xl transition-colors"
+              className="w-full mt-3 py-2 text-xs text-coral font-bold hover:bg-coral-light/20 rounded-2xl transition-colors"
             >
               {showAllBadges ? '收起 🌸' : `展开全部 (${badges.length - 2} 个更多) ✨`}
             </button>

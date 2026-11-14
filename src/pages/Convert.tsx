@@ -30,26 +30,36 @@ export default function ConvertPage() {
   const commonIcons = ['🎁', '🧋', '🎬', '🎮', '👕', '📱', '💻', '🎧', '📚', '✈️', '🍜', '🍰', '💄', '🎨', '⌚', '🏠']
 
   useEffect(() => {
-    if (equivalents && equivalents.length === 0) {
-      db.equivalents.bulkAdd(defaultEquivalents as any)
-    }
+    if (!equivalents) return
+    const known = new Set(equivalents.map((e) => e.name))
+    const missing = defaultEquivalents.filter((d) => !known.has(d.name))
+    if (missing.length) db.equivalents.bulkAdd(missing as any)
   }, [equivalents])
 
   const amount = todayExpense || 0
 
   const topEquivalents = useMemo(() => {
     if (amount <= 0) return []
-    const items = equivalents || []
-    return items
-      .map(eq => ({ ...eq, count: amount / eq.price }))
-      .filter(eq => eq.count >= 0.5)
-      .sort((a, b) => {
-        const aScore = a.count >= 1 && a.count <= 100 ? 1 : 0
-        const bScore = b.count >= 1 && b.count <= 100 ? 1 : 0
-        return bScore - aScore || Math.abs(1 - a.count) - Math.abs(1 - b.count)
-      })
-      .slice(0, 3)
-  }, [amount, equivalents])
+    const tierOf = (price: number) => (price < 10 ? 0 : price < 100 ? 1 : 2)
+    const readable = (equivalents || [])
+      .map((eq) => ({ ...eq, count: amount / eq.price }))
+      .filter((eq) => eq.count >= 0.5 && eq.count <= 2000)
+
+    // 按日期取模做稳定轮换：同一天刷新不变，隔天换一批
+    const daySeed = Number(today.replace(/-/g, ''))
+    const picked: typeof readable = []
+    for (let tier = 0; tier < 3; tier++) {
+      const list = readable.filter((eq) => tierOf(eq.price) === tier).sort((a, b) => a.price - b.price)
+      if (list.length) picked.push(list[daySeed % list.length])
+    }
+    if (picked.length < 3) {
+      const spare = readable
+        .filter((eq) => !picked.some((p) => p.id === eq.id))
+        .sort((a, b) => Math.abs(1 - a.count) - Math.abs(1 - b.count))
+      while (picked.length < 3 && spare.length) picked.push(spare.shift()!)
+    }
+    return picked.sort((a, b) => a.price - b.price)
+  }, [amount, equivalents, today])
 
   const handleAddWish = async () => {
     if (!wishName || !wishPrice) return

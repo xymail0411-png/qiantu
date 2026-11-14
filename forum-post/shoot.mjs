@@ -1,11 +1,18 @@
 import { spawn } from 'node:child_process'
-import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { mkdtempSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs'
+import { tmpdir, homedir } from 'node:os'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const CHROME = 'C:/Users/董心雅/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe'
+const HERE = dirname(fileURLToPath(import.meta.url))
+const playwrightChromium = () => {
+  const root = join(homedir(), 'AppData', 'Local', 'ms-playwright')
+  const dir = readdirSync(root).filter((d) => d.startsWith('chromium-')).sort().pop()
+  return join(root, dir, 'chrome-win64', 'chrome.exe')
+}
+const CHROME = process.env.CHROME || playwrightChromium()
 const APP = 'https://qiantu-v4sx67my80g.qoder.zone/'
-const OUT = 'C:/Users/董心雅/Desktop/bill/forum-post/shots'
+const OUT = join(HERE, 'shots')
 const PORT = 9333
 mkdirSync(OUT, { recursive: true })
 

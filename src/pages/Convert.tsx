@@ -82,6 +82,13 @@ export default function ConvertPage() {
     return count.toFixed(2)
   }
 
+  // 今天花的钱不足一个愿望时，改用「完成度百分比」表达，避免显示成 0.0 个
+  const formatShare = (count: number) => {
+    const pct = count * 100
+    if (pct < 0.1) return '<0.1'
+    return pct >= 10 ? pct.toFixed(0) : pct.toFixed(1)
+  }
+
   return (
     <div className="pb-4 space-y-4">
       {/* Today's expense summary */}
@@ -268,10 +275,21 @@ export default function ConvertPage() {
                       </div>
                     </div>
                     {amount > 0 ? (
-                      <div className="shrink-0">
-                        <p className="text-base font-bold text-coral">
-                          ≈{count >= 1 ? Math.floor(count) : count.toFixed(1)}<span className="text-xs font-medium">个</span>
-                        </p>
+                      <div className="shrink-0 text-right">
+                        {count >= 1 ? (
+                          <p className="text-base font-bold text-coral">
+                            ≈{formatCount(count)}<span className="text-xs font-medium">个</span>
+                          </p>
+                        ) : (
+                          <>
+                            <p className="text-base font-bold text-coral">
+                              ≈{formatShare(count)}<span className="text-xs font-medium">%</span>
+                            </p>
+                            <p className="text-[10px] text-sub/60">
+                              还差¥{(item.price - amount) < 1 ? (item.price - amount).toFixed(1) : Math.ceil(item.price - amount)}
+                            </p>
+                          </>
+                        )}
                       </div>
                     ) : (
                       <div className="shrink-0">
